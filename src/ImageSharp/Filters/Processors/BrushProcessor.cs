@@ -43,25 +43,45 @@ namespace ImageSharp.Processors
         /// <inheritdoc/>
         protected override void Apply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
         {
-            brush.Apply(source, new NoOpMask(sourceRectangle));
-        }
+            int startX = sourceRectangle.X;
+            int endX = sourceRectangle.Right;
 
-        private class NoOpMask : IMask
-        {
-            public NoOpMask(Rectangle bounds)
+            // Align start/end positions.
+            int minX = Math.Max(0, startX);
+            int maxX = Math.Min(source.Width, endX);
+            int minY = Math.Max(0, startY);
+            int maxY = Math.Min(source.Height, endY);
+
+            // Reset offset if necessary.
+            if (minX > 0)
             {
-                Bounds = bounds;
+                startX = 0;
             }
 
-            public Rectangle Bounds
+            if (minY > 0)
             {
-                get;
+                startY = 0;
             }
 
-            public float Distance(int x, int y)
+            //calculate 
+
+            using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
-                return 0;
+                Parallel.For(
+                    minY,
+                    maxY,
+                    this.ParallelOptions,
+                    y =>
+                    {
+                        int offsetY = y - startY;
+                        for (int x = minX; x < maxX; x++)
+                        {
+                            int offsetX = x - startX;
+                            var packed = brush.GetColor(sourcePixels, offsetX, offsetY);
+                            sourcePixels[offsetX, offsetY] = packed;
+                        }
+                    });
             }
-        }
+        }        
     }
 }

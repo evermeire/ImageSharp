@@ -9,7 +9,7 @@ namespace ImageSharp.Shapes
     public interface IVectorGraphic
     {
         void Apply<TColor, TPacked>(IImageBase<TColor, TPacked> source)
-           where TColor : struct, IPackedPixel<TPacked>
-           where TPacked : struct;
+            where TColor : struct, IPackedPixel<TPacked>
+            where TPacked : struct;
     }
 }

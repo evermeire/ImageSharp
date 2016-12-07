@@ -44,5 +44,7 @@ namespace ImageSharp.Processors
         {
             shape.Apply(source);
         }
+
+
     }
 }

@@ -13,13 +13,7 @@ namespace ImageSharp.Brushes
     /// </summary>
     public interface IBrush
     {
-        /// <summary>
-        /// Applies the brush to the source.
-        /// </summary>
-        /// <typeparam name="TColor">The type of the color.</typeparam>
-        /// <typeparam name="TPacked">The type of the packed.</typeparam>
-        /// <param name="source">The source.</param>
-        void Apply<TColor, TPacked>(IImageBase<TColor, TPacked> source, IMask mask)
+        TColor GetColor<TColor, TPacked>(PixelAccessor<TColor, TPacked> source, int x, int y)
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct;
     }
