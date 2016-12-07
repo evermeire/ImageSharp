@@ -8,7 +8,7 @@ namespace ImageSharp.Tests
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using Brushs;
+    using Brushes;
     using Xunit;
 
     public class SolidBrushTests : FileTestBase
@@ -25,7 +25,7 @@ namespace ImageSharp.Tests
                 using (FileStream output = File.OpenWrite($"{path}/{file.FileName}"))
                 {
                     image
-                        .Draw(new SolidBrush(Color.HotPink))
+                        .Fill(new SolidBrush(Color.HotPink))
                         .Save(output);
                 }
             }

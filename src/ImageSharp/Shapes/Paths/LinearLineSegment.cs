@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Brushs
+namespace ImageSharp.Shapes
 {
 
     using System;
@@ -25,14 +25,9 @@ namespace ImageSharp.Brushs
             ControlPoints = new ReadOnlyCollection<Point>(points.ToList());
         }
 
-        public IEnumerable<SimpleLineSegment> Simplify(float quality)
+        public IEnumerable<Point> Simplify()
         {
-            var lastPoint = ControlPoints.First();
-            foreach (var point in ControlPoints.Skip(1))
-            {
-                yield return new SimpleLineSegment(lastPoint, point);
-                lastPoint = point;
-            }
+            return ControlPoints;
         }
     }
 }

@@ -3,9 +3,9 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Brushs
+namespace ImageSharp.Brushes
 {
-
+    using Shapes;
     using System;
     using System.Numerics;
     using System.Threading.Tasks;
@@ -39,10 +39,15 @@ namespace ImageSharp.Brushs
         /// <param name="startY">The start y.</param>
         /// <param name="endY">The end y.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        public void Apply<TColor, TPacked>(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
+        public void Apply<TColor, TPacked>(IImageBase<TColor, TPacked> source, IMask mask)
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
         {
+            var sourceRectangle = mask.Bounds;
+            // if/when we support antiailiasing we might/will need to expand the bound to account
+
+            int startY = sourceRectangle.Y;
+            int endY = sourceRectangle.Bottom;
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
 
@@ -63,11 +68,11 @@ namespace ImageSharp.Brushs
                 startY = 0;
             }
 
-            
-
             Vector4 backgroundColor = color.ToVector4();
             TColor packed = default(TColor);
             packed.PackFromVector4(backgroundColor);
+
+            //calculate 
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
@@ -80,8 +85,26 @@ namespace ImageSharp.Brushs
                         int offsetY = y - startY;
                         for (int x = minX; x < maxX; x++)
                         {
-                            int offsetX = x - startX;                        
-                            sourcePixels[offsetX, offsetY] = packed;
+                            int offsetX = x - startX;
+                            var dist = mask.Distance(offsetX, offsetY);
+                            if (dist == 0)
+                            {
+                                //inside mask full color
+                                sourcePixels[offsetX, offsetY] = packed;
+                            }
+                            else if (dist < 1)
+                            {
+                                Vector4 color = sourcePixels[offsetX, offsetY].ToVector4();
+
+                                var alpha = (1 - dist);
+
+                                color = Vector4.Lerp(color, backgroundColor, alpha > 0 ? alpha : backgroundColor.W);
+                                
+                                TColor newPacked = default(TColor);
+                                newPacked.PackFromVector4(color);
+                                sourcePixels[offsetX, offsetY] = newPacked;
+                            }
+                            // TODO add distance ability to effect opactiy based on distance
                         }
                     });
             }
