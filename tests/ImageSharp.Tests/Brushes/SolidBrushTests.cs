@@ -31,5 +31,24 @@ namespace ImageSharp.Tests
             }
 
         }
+
+        [Fact]
+        public void ImageShouldApplySolidColorToAllpixelsWithOpacity()
+        {
+            string path = CreateOutputDirectory("SolidBrush", "Opacity");
+
+            foreach (TestFile file in Files)
+            {
+                Image image = file.CreateImage();
+
+                using (FileStream output = File.OpenWrite($"{path}/{file.FileName}"))
+                {
+                    image
+                        .Fill(new SolidBrush(new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150)))
+                        .Save(output);
+                }
+            }
+
+        }
     }
 }

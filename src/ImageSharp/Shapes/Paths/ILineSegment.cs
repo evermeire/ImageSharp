@@ -5,6 +5,7 @@ namespace ImageSharp.Shapes
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Numerics;
     using System.Threading.Tasks;
 
     public interface ILineSegment
@@ -14,6 +15,6 @@ namespace ImageSharp.Shapes
         /// </summary>
         /// <param name="quality">The quality.</param>
         /// <returns></returns>
-        IEnumerable<Point> Simplify();
+        IEnumerable<Vector2> Simplify();
     }
 }
