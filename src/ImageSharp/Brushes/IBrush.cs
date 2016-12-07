@@ -3,9 +3,9 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Brushs
+namespace ImageSharp.Brushes
 {
-
+    using Shapes;
     using System;
 
     /// <summary>
@@ -19,10 +19,7 @@ namespace ImageSharp.Brushs
         /// <typeparam name="TColor">The type of the color.</typeparam>
         /// <typeparam name="TPacked">The type of the packed.</typeparam>
         /// <param name="source">The source.</param>
-        /// <param name="sourceRectangle">The source rectangle.</param>
-        /// <param name="startY">The start y.</param>
-        /// <param name="endY">The end y.</param>
-        void Apply<TColor, TPacked>(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
+        void Apply<TColor, TPacked>(IImageBase<TColor, TPacked> source, IMask mask)
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct;
     }

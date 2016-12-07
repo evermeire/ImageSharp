@@ -5,7 +5,7 @@
 
 namespace ImageSharp
 {
-    using Brushs;
+    using Shapes;
     using Processors;
 
     /// <summary>
@@ -22,11 +22,11 @@ namespace ImageSharp
         /// <param name="source">The image this method extends.</param>
         /// <param name="color">The color to set as the background.</param>
         /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
-        public static Image<TColor, TPacked> Draw<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush)
+        public static Image<TColor, TPacked> Draw<TColor, TPacked>(this Image<TColor, TPacked> source, IVectorGraphic shape)
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
         {
-            return source.Process(new DrawProcessor<TColor, TPacked>(brush));
+            return source.Process(new ShapeProcessor<TColor, TPacked>(shape));
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ImageSharp.Brushs;
-
-namespace ImageSharp.Brushs
+﻿
+namespace ImageSharp.Shapes
 {
+
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public interface ILineSegment
     {
         /// <summary>
@@ -13,6 +14,6 @@ namespace ImageSharp.Brushs
         /// </summary>
         /// <param name="quality">The quality.</param>
         /// <returns></returns>
-        IEnumerable<SimpleLineSegment> Simplify(float quality);
+        IEnumerable<Point> Simplify();
     }
 }
