@@ -244,6 +244,20 @@ namespace ImageSharp
                    && y < this.Bottom;
         }
 
+
+        /// <summary>
+        /// Determines if the specfied <see cref="Rectangle"/> intersects the rectangular region defined by
+        /// this <see cref="Rectangle"/>.
+        /// </summary>
+        /// <param name="rect">The other Rectange </param>
+        /// <returns>The <see cref="bool"/></returns>
+        public bool Intersects(Rectangle rect)
+        {
+            return rect.Left <= this.Right && rect.Right >= this.Left
+                &&
+                rect.Top <= this.Bottom && rect.Bottom >= this.Top;
+        }
+
         /// <inheritdoc/>
         public override int GetHashCode()
         {

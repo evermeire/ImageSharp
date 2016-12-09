@@ -11,6 +11,7 @@ namespace ImageSharp.Tests
     using Brushes;
     using Xunit;
     using Shapes;
+    using Shapes.Polygons;
 
     public class SolidPolygonTests : FileTestBase
     {
@@ -97,6 +98,7 @@ namespace ImageSharp.Tests
         public void ImageShouldBeOverlayedByFilledRectangleWithHole()
         {
             string path = CreateOutputDirectory("SolidPolygons", "Hole");
+            
             var outlinePoly = new SimplePolygon(new[] { new LinearLineSegment(
                             new Point(10, 10),
                             new Point(200, 10),
@@ -109,17 +111,22 @@ namespace ImageSharp.Tests
                             new Point(20, 40),
                             new Point(40, 40),
                             new Point(40, 20)
-                            ) });
+                            ) })
+            { IsHole = true };
 
             var hole2 = new SimplePolygon(new[] { new LinearLineSegment(
                             new Point(120, 120),
                             new Point(120, 140),
                             new Point(140, 140),
                             new Point(140, 120)
-                            ) });
+                            ) })
+            { IsHole = true };
 
+            var complexPoly = new ComplexPolygon(new[] {
+                outlinePoly, hole1, hole2
+            });
             var brush = new SolidBrush(Color.HotPink);
-            var polygon = new SolidPolygon(brush, outlinePoly, hole1, hole2);
+            var polygon = new SolidPolygon(brush, complexPoly);
 
             foreach (TestFile file in Files)
             {

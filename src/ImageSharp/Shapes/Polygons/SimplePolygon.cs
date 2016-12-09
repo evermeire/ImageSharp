@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Shapes
+namespace ImageSharp.Shapes.Polygons
 {
     using Brushes;
     using System;
@@ -13,10 +13,15 @@ namespace ImageSharp.Shapes
     using System.Numerics;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// a <see cref="SimplePolygon"/> represents a contiguos bound region 
+    /// that will act as a hole or a solid
+    /// </summary>
     internal class SimplePolygon
-    { 
+    {
         private Lazy<Rectangle> bounds;
         private IReadOnlyList<ILineSegment> segments;
+        public bool IsHole { get; set; } = false;
 
         public SimplePolygon(ILineSegment segments)
             : this(new[] { segments })
@@ -27,6 +32,7 @@ namespace ImageSharp.Shapes
             : this(new LinearLineSegment(points))
         {
         }
+
         public SimplePolygon(IEnumerable<ILineSegment> segments)
         {
             this.segments = new ReadOnlyCollection<ILineSegment>(segments.ToList());
@@ -55,7 +61,7 @@ namespace ImageSharp.Shapes
                 {
                     // back counting 
                     index = polyCorners - boundexIndex;
-                }else
+                } else
                 {
                     index = boundexIndex;
                 }
@@ -101,7 +107,7 @@ namespace ImageSharp.Shapes
 
                 // ensure points are availible
                 CalculatePoints();
-                
+
                 constant = new float[polyCorners];
                 multiple = new float[polyCorners];
                 int i, j = polyCorners - 1;
@@ -127,9 +133,9 @@ namespace ImageSharp.Shapes
             }
         }
 
-        bool PointInPolygon(int x, int y)
+        bool PointInPolygon(float x, float y)
         {
-            if(!Bounds.Contains(x, y))
+            if (!Bounds.Contains((int)x, (int)y))
             {
                 return false;
             }
@@ -138,7 +144,7 @@ namespace ImageSharp.Shapes
             // pre calculate simple regions that are inside the polygo and see if its contained in one of those
 
             CalculateConstants();
-            
+
 
             var j = polyCorners - 1;
             bool oddNodes = false;
@@ -156,39 +162,73 @@ namespace ImageSharp.Shapes
             return oddNodes;
         }
 
-        public float CalculateDistance(int x, int y)
+        private float DistanceSquared(float x1, float y1, float x2, float y2, float xp, float yp)
         {
-            float distance = int.MaxValue;
-            for (var i = 0; i < polyCorners-1; i++)
+            var px = x2 - x1;
+            var py = y2 - y1;
+
+            float something = px * px + py * py;
+
+            var u = ((xp - x1) * px + (yp - y1) * py) / something;
+
+            if (u > 1)
             {
-                var xDist = polyX[i + 1] - polyX[i];
-                var yDist = polyY[i + 1] - polyY[i];
+                u = 1;
+            }
+            else if (u < 0)
+            {
+                u = 0;
+            }
 
-                var yDistPoint = polyY[i] - y;
-                var xDistPoint = polyX[i] - x;
+            var x = x1 + u * px;
+            var y = y1 + u * py;
 
-                var lastDistance = (float)Math.Abs(
-                    Math.Abs(xDist * yDistPoint - xDistPoint * yDist)
-                    /
-                    Math.Sqrt((xDist * xDist) + (yDist * yDist))
-                );
+            var dx = x - xp;
+            var dy = y - yp;
 
-                if(lastDistance < distance)
+            return dx * dx + dy * dy;
+        }
+
+        private float CalculateDistance(Vector2 vector)
+        {
+            return CalculateDistance(vector.X, vector.Y);
+        }
+
+        private float CalculateDistance(float x, float y)
+        {
+
+            float distance = float.MaxValue;
+            for (var i = 0; i < polyCorners; i++)
+            {
+                var next = i + 1;
+                if (next == polyCorners)
+                {
+                    next = 0;
+                }
+
+                var lastDistance = DistanceSquared(polyX[i], polyY[i], polyX[next], polyY[next], x, y);
+
+                if (lastDistance < distance)
                 {
                     distance = lastDistance;
                 }
             }
 
-            return distance;
+            return (float)Math.Sqrt(distance);
         }
 
-        public float Distance(int x, int y, bool asHole)
+        public float Distance(Vector2 vector)
+        {
+            return Distance(vector.X, vector.Y);
+        }
+
+        public float Distance(float x, float y)
         {
             // we will do a nieve point in polygon test here for now 
             // TODO optermise here and actually return a distance
             if (PointInPolygon(x, y))
             {
-                if (asHole)
+                if (IsHole)
                 {
                     return CalculateDistance(x, y);
                 }
@@ -196,7 +236,7 @@ namespace ImageSharp.Shapes
                 return 0;
             }
 
-            if (asHole)
+            if (IsHole)
             {
                 return 0;
             }
@@ -232,6 +272,91 @@ namespace ImageSharp.Shapes
                     }
                 }
             }
+        }
+
+
+        Vector2? LineIntersectionPoint(Vector2 ps1, Vector2 pe1, Vector2 ps2, Vector2 pe2)
+        {
+            // Get A,B,C of first line - points : ps1 to pe1
+            float A1 = pe1.Y - ps1.Y;
+            float B1 = ps1.X - pe1.X;
+            float C1 = A1 * ps1.X + B1 * ps1.Y;
+
+            // Get A,B,C of second line - points : ps2 to pe2
+            float A2 = pe2.Y - ps2.Y;
+            float B2 = ps2.X - pe2.X;
+            float C2 = A2 * ps2.X + B2 * ps2.Y;
+
+            // Get delta and check if the lines are parallel
+            float delta = A1 * B2 - A2 * B1;
+            if (delta == 0)
+            {
+                return null;
+            }
+
+            // now return the Vector2 intersection point
+            return new Vector2(
+                (B2 * C1 - B1 * C2) / delta,
+                (A1 * C2 - A2 * C1) / delta
+            );
+        }
+
+        private Rectangle GetBounds(Vector2 start, Vector2 end)
+        {
+            var minX = Math.Min(start.X, end.X);
+            var maxX = Math.Min(start.X, end.X);
+
+            var minY = Math.Min(start.Y, end.Y);
+            var maxY = Math.Min(start.Y, end.Y);
+
+            return new Rectangle((int)minX, (int)minY, (int)maxX - (int)minX, (int)maxY - (int)minY);
+        }
+
+        public Vector2? GetIntersectionPoint(SimplePolygon polygon)
+        {
+            for (var i = 0; i < this.Corners; i++)
+            {
+                var prevPoint = this[i - 1];
+
+                var currentPoint = this[i];
+
+                Rectangle src = GetBounds(prevPoint, currentPoint);
+                
+
+                for (var j = 0; j < polygon.Corners; j++)
+                {
+
+                    var prevPointOther = polygon[j - 1];
+
+                    var currentPointOther = polygon[j];
+
+                    Rectangle target = GetBounds(prevPointOther, currentPointOther);
+
+                    //first do they have overlapping bounding boxes
+
+                    if (src.Intersects(target))
+                    {
+                        //there boxes intersect lets find where there lines touch
+
+                        LineIntersectionPoint()
+                    }
+                }
+
+
+            }
+            // does this poly intersect with another
+
+
+        }
+
+        public SimplePolygon Clone()
+        {
+            List<Vector2> points = new List<Vector2>();
+            for (var i = 0; i < this.polyCorners; i++)
+            {
+                points.Add(this[i]);
+            }
+            return new SimplePolygon(points) { IsHole = this.IsHole };
         }
     }
 }
