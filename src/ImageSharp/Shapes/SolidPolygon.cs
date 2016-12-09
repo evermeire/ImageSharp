@@ -6,6 +6,7 @@
 namespace ImageSharp.Shapes
 {
     using Brushes;
+    using Polygons;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -20,29 +21,20 @@ namespace ImageSharp.Shapes
         private readonly IBrush fillColor;
 
         private Lazy<Rectangle> bounds;
-        private SimplePolygon outline;
-        private IEnumerable<SimplePolygon> holes;
+        private ComplexPolygon poly;
 
         public SolidPolygon(IBrush fillColor, ILineSegment segment) : this(fillColor, new[] { segment })
         {
         }
 
         public SolidPolygon(IBrush fillColor, IEnumerable<ILineSegment> segments)
-            :this(fillColor, new SimplePolygon(segments))
+            :this(fillColor, new ComplexPolygon(segments))
         {
         }
-
-        internal SolidPolygon(IBrush fillColor, SimplePolygon outline,params SimplePolygon[] holes) 
-            : this(fillColor, outline, (IEnumerable<SimplePolygon>) holes)
+        
+        internal SolidPolygon(IBrush fillColor, ComplexPolygon poly)
         {
-            this.outline = outline;
-            this.fillColor = fillColor;
-        }
-
-        internal SolidPolygon(IBrush fillColor, SimplePolygon outline, IEnumerable<SimplePolygon> holes)
-        {
-            this.outline = outline;
-            this.holes = holes ?? Enumerable.Empty<SimplePolygon>();
+            this.poly = poly;
             this.fillColor = fillColor;
         }
 
@@ -50,13 +42,13 @@ namespace ImageSharp.Shapes
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
         {
-            var sourceRectangle = outline.Bounds;
+            var sourceRectangle = poly.Bounds;
             // if/when we support antiailiasing we might/will need to expand the bound to account
 
-            int startY = sourceRectangle.Y;
-            int endY = sourceRectangle.Bottom;
-            int startX = sourceRectangle.X;
-            int endX = sourceRectangle.Right;
+            int startY = sourceRectangle.Y - 2;
+            int endY = sourceRectangle.Bottom + 2;
+            int startX = sourceRectangle.X - 2;
+            int endX = sourceRectangle.Right + 2;
 
             // Align start/end positions.
             int minX = Math.Max(0, startX);
@@ -92,24 +84,11 @@ namespace ImageSharp.Shapes
 
                             // lets Calculate Distance From Edge
                             
-                            var dist = outline.Distance(offsetX, offsetY, false);
+                            var dist = poly.Distance(offsetX, offsetY);
 
-                            if(dist == 0)
-                            {
-                                foreach(var hole in holes)
-                                {
-                                    var distFromHole = hole.Distance(offsetX, offsetY, true);
+                            const float antialiasFactor = 0.75f;
 
-                                    if(distFromHole != 0)
-                                    {
-                                        //we are in the hole 
-                                        dist = distFromHole;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (dist < 1)
+                            if (dist <= antialiasFactor)
                             {
                                 var packed = fillColor.GetColor(sourcePixels, offsetX, offsetY);
                                 if (dist == 0)
@@ -119,11 +98,10 @@ namespace ImageSharp.Shapes
                                 }
                                 else
                                 {
+                                    var alpha = 1- (dist / antialiasFactor);
+
                                     Vector4 color = sourcePixels[offsetX, offsetY].ToVector4();
-
                                     Vector4 backgroundColor = packed.ToVector4();
-                                    var alpha = (1 - dist);
-
                                     color = Vector4.Lerp(color, backgroundColor, alpha > 0 ? alpha : backgroundColor.W);
 
                                     TColor newPacked = default(TColor);
