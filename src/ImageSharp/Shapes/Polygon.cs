@@ -12,7 +12,9 @@ namespace ImageSharp.Shapes
     using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
+    using Polygons;
 
+    
     public class Polygon : IVectorGraphic
     {
         public ParallelOptions ParallelOptions { get; set; } = Bootstrapper.Instance.ParallelOptions;
@@ -138,7 +140,7 @@ namespace ImageSharp.Shapes
                 var outPoint = LineIntersectionPoint(prevStartOut, prevEndOut, nextStartOut, nextEndOut);
                 var inPoint = LineIntersectionPoint(prevStartIn, prevEndIn, nextStartIn, nextEndIn);
 
-                if(RawPolygon.Distance(inPoint, false) == 0)
+                if(RawPolygon.Distance(inPoint) == 0)
                 {
                     outlinePoints.Add(outPoint);
                     holePoints.Add(inPoint);
@@ -150,7 +152,7 @@ namespace ImageSharp.Shapes
                 }
             }
             
-            return new SolidPolygon(fillColor, new SimplePolygon(outlinePoints), new SimplePolygon(holePoints));
+            return new SolidPolygon(fillColor, new ComplexPolygon(new[] { new SimplePolygon(outlinePoints), new SimplePolygon(holePoints) { IsHole = true } }));
         }
 
 

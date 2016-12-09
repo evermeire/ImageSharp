@@ -11,8 +11,8 @@ namespace ImageSharp.Brushes
     /// <summary>
     /// interface preresenting a brush
     /// </summary>
-    public interface IBrush
+    public interface IBrushApplicator : IDisposable
     {
-        IBrushApplicator CreateApplicator(Rectangle region);
+        Color GetColor(int x, int y);
     }
 }

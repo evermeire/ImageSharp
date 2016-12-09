@@ -17,7 +17,7 @@ namespace ImageSharp.Shapes.Polygons
     /// a <see cref="SimplePolygon"/> represents a contiguos bound region 
     /// that will act as a hole or a solid
     /// </summary>
-    internal class SimplePolygon
+    internal class SimplePolygon : IShape
     {
         private Lazy<Rectangle> bounds;
         private IReadOnlyList<ILineSegment> segments;
@@ -226,21 +226,33 @@ namespace ImageSharp.Shapes.Polygons
         {
             // we will do a nieve point in polygon test here for now 
             // TODO optermise here and actually return a distance
-            if (PointInPolygon(x, y))
+
+            bool isInside = PointInPolygon(x, y);
+
+            var dist = CalculateDistance(x, y);
+
+            if (isInside)
             {
                 if (IsHole)
                 {
-                    return CalculateDistance(x, y);
+                    return dist;
                 }
-                //we are on line or inside
-                return 0;
+                else
+                {
+                    return -dist;
+                }
             }
-
-            if (IsHole)
+            else
             {
-                return 0;
+                if (IsHole)
+                {
+                    return -dist;
+                }
+                else
+                {
+                    return dist;
+                }
             }
-            return CalculateDistance(x, y);
         }
 
         private Rectangle CalculateBounds()
@@ -312,42 +324,42 @@ namespace ImageSharp.Shapes.Polygons
             return new Rectangle((int)minX, (int)minY, (int)maxX - (int)minX, (int)maxY - (int)minY);
         }
 
-        public Vector2? GetIntersectionPoint(SimplePolygon polygon)
-        {
-            for (var i = 0; i < this.Corners; i++)
-            {
-                var prevPoint = this[i - 1];
+        //public Vector2? GetIntersectionPoint(SimplePolygon polygon)
+        //{
+        //    for (var i = 0; i < this.Corners; i++)
+        //    {
+        //        var prevPoint = this[i - 1];
 
-                var currentPoint = this[i];
+        //        var currentPoint = this[i];
 
-                Rectangle src = GetBounds(prevPoint, currentPoint);
+        //        Rectangle src = GetBounds(prevPoint, currentPoint);
                 
 
-                for (var j = 0; j < polygon.Corners; j++)
-                {
+        //        for (var j = 0; j < polygon.Corners; j++)
+        //        {
 
-                    var prevPointOther = polygon[j - 1];
+        //            var prevPointOther = polygon[j - 1];
 
-                    var currentPointOther = polygon[j];
+        //            var currentPointOther = polygon[j];
 
-                    Rectangle target = GetBounds(prevPointOther, currentPointOther);
+        //            Rectangle target = GetBounds(prevPointOther, currentPointOther);
 
-                    //first do they have overlapping bounding boxes
+        //            //first do they have overlapping bounding boxes
 
-                    if (src.Intersects(target))
-                    {
-                        //there boxes intersect lets find where there lines touch
+        //            if (src.Intersects(target))
+        //            {
+        //                //there boxes intersect lets find where there lines touch
 
-                        LineIntersectionPoint()
-                    }
-                }
-
-
-            }
-            // does this poly intersect with another
+        //                //LineIntersectionPoint()
+        //            }
+        //        }
 
 
-        }
+        //    }
+        //    // does this poly intersect with another
+
+
+        //}
 
         public SimplePolygon Clone()
         {
@@ -357,6 +369,11 @@ namespace ImageSharp.Shapes.Polygons
                 points.Add(this[i]);
             }
             return new SimplePolygon(points) { IsHole = this.IsHole };
+        }
+
+        float IShape.Distance(int x, int y)
+        {
+            return this.Distance(x, y);
         }
     }
 }

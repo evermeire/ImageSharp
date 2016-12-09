@@ -15,15 +15,14 @@ namespace ImageSharp.Shapes
 
     public class LinearLineSegment : ILineSegment
     {
-        public IReadOnlyList<Vector2> ControlPoints { get; }
+        private readonly IEnumerable<Vector2> controlPoints;
 
-       
         internal LinearLineSegment(IEnumerable<Vector2> points)
         {
             Guard.NotNull(points, nameof(points));
             Guard.MustBeGreaterThanOrEqualTo(points.Count(), 2, nameof(points));
 
-            ControlPoints = new ReadOnlyCollection<Vector2>(points.ToList());
+            controlPoints = points;
         }
 
         public LinearLineSegment(params Point[] points)
@@ -39,7 +38,7 @@ namespace ImageSharp.Shapes
 
         public IEnumerable<Vector2> Simplify()
         {
-            return ControlPoints;
+            return controlPoints;
         }
     }
 }

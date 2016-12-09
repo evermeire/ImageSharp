@@ -18,13 +18,12 @@ namespace ImageSharp.Tests
         public void ImageShouldBeOverlayedByPolygonOutline()
         {
             string path = CreateOutputDirectory("Polygons");
-            var simplePath = new LinearLineSegment(
+            var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)
-                            );
+            };
             var brush = new SolidBrush(Color.HotPink);
-            var polygon = new Polygon(brush, 10, simplePath);
 
             foreach (TestFile file in Files)
             {
@@ -33,7 +32,7 @@ namespace ImageSharp.Tests
                 using (FileStream output = File.OpenWrite($"{path}/{file.FileName}"))
                 {
                     image
-                        .Draw(polygon)
+                        .DrawPolygon(brush, 5, simplePath)
                         .Save(output);
                 }
             }
@@ -44,14 +43,13 @@ namespace ImageSharp.Tests
         public void ImageShouldBeOverlayedPolygonOutlineWithOpacity()
         {
             string path = CreateOutputDirectory("Polygons", "OpacityBrush");
-            var simplePath = new LinearLineSegment(
+            var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)
-                            );
+            };
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
             var brush = new SolidBrush(color);
-            var polygon = new Polygon(brush, 10, simplePath);
 
             foreach (TestFile file in Files)
             {
@@ -60,7 +58,7 @@ namespace ImageSharp.Tests
                 using (FileStream output = File.OpenWrite($"{path}/{file.FileName}"))
                 {
                     image
-                        .Draw(polygon)
+                        .DrawPolygon(brush, 10, simplePath)
                         .Save(output);
                 }
             }
@@ -70,14 +68,13 @@ namespace ImageSharp.Tests
         public void ImageShouldBeOverlayedByRectangleOutline()
         {
             string path = CreateOutputDirectory("Polygons", "Rectangle");
-            var simplePath = new LinearLineSegment(
+            var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 10),
                             new Point(200, 150),
                             new Point(10, 150)
-                            );
+                            };
             var brush = new SolidBrush(Color.HotPink);
-            var polygon = new Polygon(brush, 10, simplePath);
 
             foreach (TestFile file in Files)
             {
@@ -86,7 +83,7 @@ namespace ImageSharp.Tests
                 using (FileStream output = File.OpenWrite($"{path}/{file.FileName}"))
                 {
                     image
-                        .Draw(polygon)
+                        .DrawPolygon(brush, 10, simplePath)
                         .Save(output);
                 }
             }

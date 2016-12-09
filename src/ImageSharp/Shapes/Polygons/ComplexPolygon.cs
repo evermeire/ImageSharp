@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ImageSharp.Shapes.Polygons
 {
-    internal class ComplexPolygon
+    internal class ComplexPolygon : IShape
     {
         private readonly IEnumerable<SimplePolygon> simplePolygons;
         private IEnumerable<SimplePolygon> holes;
@@ -35,14 +35,15 @@ namespace ImageSharp.Shapes.Polygons
 
         private void Simplify()
         {
-
+            outlines = simplePolygons.Where(x => !x.IsHole).ToList();
+            holes = simplePolygons.Where(x => x.IsHole).ToList();
         }
 
         public Rectangle Bounds => lazyRect.Value;
 
         public float Distance(float x, float y)
         {
-            var dist = outline.Distance(x, y);
+            var dist = outlines.Min(o=>o.Distance(x, y));
 
             if (dist == 0)
             {
@@ -60,6 +61,11 @@ namespace ImageSharp.Shapes.Polygons
             }
 
             return dist;
+        }
+
+        float IShape.Distance(int x, int y)
+        {
+            return this.Distance(x, y);
         }
     }
 }

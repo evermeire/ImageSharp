@@ -7,6 +7,8 @@ namespace ImageSharp
 {
     using Shapes;
     using Processors;
+    using Brushes;
+    using Shapes.Polygons;
 
     /// <summary>
     /// Extension methods for the <see cref="Image{TColor, TPacked}"/> type.
@@ -14,19 +16,33 @@ namespace ImageSharp
     public static partial class ImageExtensions
     {
 
-        /// <summary>
-        /// Replaces the background color of image with the given one.
-        /// </summary>
-        /// <typeparam name="TColor">The pixel format.</typeparam>
-        /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
-        /// <param name="source">The image this method extends.</param>
-        /// <param name="color">The color to set as the background.</param>
-        /// <returns>The <see cref="Image{TColor, TPacked}"/>.</returns>
-        public static Image<TColor, TPacked> Draw<TColor, TPacked>(this Image<TColor, TPacked> source, IVectorGraphic shape)
-            where TColor : struct, IPackedPixel<TPacked>
-            where TPacked : struct
+        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, IShape shape)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
         {
-            return source.Process(new ShapeProcessor<TColor, TPacked>(shape));
+            return source.Process(new FillShapeProcessor<TColor, TPacked>(brush, shape));
+        }
+
+        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, Point[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.Process(new FillShapeProcessor<TColor, TPacked>(brush, new SimplePolygon(new LinearLineSegment(points))));
+        }
+
+
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, IShape shape)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.Process(new DrawShapeProcessor<TColor, TPacked>(brush, thickness, shape));
+        }
+
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, Point[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.Process(new DrawShapeProcessor<TColor, TPacked>(brush, thickness, new SimplePolygon(new LinearLineSegment(points))));
         }
     }
 }
