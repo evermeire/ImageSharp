@@ -67,20 +67,39 @@ namespace ImageSharp.Processors
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
-                Parallel.For(
-                    minY,
-                    maxY,
-                    this.ParallelOptions,
-                    y =>
-                    {
-                        int offsetY = y - startY;
-                        for (int x = minX; x < maxX; x++)
+                using (var applicator = brush.CreateApplicator(sourceRectangle))
+                {
+                    Parallel.For(
+                        minY,
+                        maxY,
+                        this.ParallelOptions,
+                        y =>
                         {
-                            int offsetX = x - startX;
-                            var packed = brush.GetColor(sourcePixels, offsetX, offsetY);
-                            sourcePixels[offsetX, offsetY] = packed;
-                        }
-                    });
+                            int offsetY = y - startY;
+                            for (int x = minX; x < maxX; x++)
+                            {
+                                int offsetX = x - startX;
+                                var pixelColor = applicator.GetColor(offsetX, offsetY);
+                                Vector4 pixelColorVector = pixelColor.ToVector4();
+                                float opacity = 1;
+
+                                if (pixelColor.A < 255)
+                                {
+                                    opacity = pixelColor.A / 255f;
+                                }
+                                
+                                if (opacity < 1)
+                                {
+                                    Vector4 currentColor = sourcePixels[offsetX, offsetY].ToVector4();
+                                    pixelColorVector = Vector4.Lerp(currentColor, pixelColorVector, opacity);
+                                }
+
+                                TColor packed = default(TColor);
+                                packed.PackFromVector4(pixelColorVector);
+                                sourcePixels[offsetX, offsetY] = packed;
+                            }
+                        });
+                }
             }
         }        
     }

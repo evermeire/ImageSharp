@@ -18,6 +18,8 @@ namespace ImageSharp.Shapes
     {
         public ParallelOptions ParallelOptions { get; set; } = Bootstrapper.Instance.ParallelOptions;
 
+        const float antialiasFactor = 0.75f;
+
         private readonly IBrush fillColor;
 
         private Lazy<Rectangle> bounds;
@@ -66,12 +68,14 @@ namespace ImageSharp.Shapes
             {
                 startY = 0;
             }
-            
+
             //calculate 
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
-                Parallel.For(
+                using (var applicator = fillColor.CreateApplicator(sourceRectangle))
+                {
+                    Parallel.For(
                     minY,
                     maxY,
                     this.ParallelOptions,
@@ -83,34 +87,42 @@ namespace ImageSharp.Shapes
                             int offsetX = x - startX;
 
                             // lets Calculate Distance From Edge
-                            
-                            var dist = poly.Distance(offsetX, offsetY);
 
-                            const float antialiasFactor = 0.75f;
+                            var dist = poly.Distance(offsetX, offsetY);
 
                             if (dist <= antialiasFactor)
                             {
-                                var packed = fillColor.GetColor(sourcePixels, offsetX, offsetY);
-                                if (dist == 0)
-                                {
-                                    //inside mask full color
-                                    sourcePixels[offsetX, offsetY] = packed;
-                                }
-                                else
-                                {
-                                    var alpha = 1- (dist / antialiasFactor);
+                                var pixelColor = applicator.GetColor(offsetX, offsetY);
+                                Vector4 pixelColorVector = pixelColor.ToVector4();
+                                float opacity = 1;
 
-                                    Vector4 color = sourcePixels[offsetX, offsetY].ToVector4();
-                                    Vector4 backgroundColor = packed.ToVector4();
-                                    color = Vector4.Lerp(color, backgroundColor, alpha > 0 ? alpha : backgroundColor.W);
+                                if (pixelColor.A < 255)
+                                {
 
-                                    TColor newPacked = default(TColor);
-                                    newPacked.PackFromVector4(color);
-                                    sourcePixels[offsetX, offsetY] = newPacked;
+                                    opacity = pixelColor.A / 255f;
                                 }
+
+                                if (dist != 0)
+                                {
+                                    var alpha = 1 - (dist / antialiasFactor);
+
+                                    opacity = opacity * alpha;
+
+                                }
+
+                                if (opacity < 1)
+                                {
+                                    Vector4 currentColor = sourcePixels[offsetX, offsetY].ToVector4();
+                                    pixelColorVector = Vector4.Lerp(currentColor, pixelColorVector, opacity);
+                                }
+
+                                TColor packed = default(TColor);
+                                packed.PackFromVector4(pixelColorVector);
+                                sourcePixels[offsetX, offsetY] = packed;
                             }
                         }
                     });
+                }
             }
         }
     }
