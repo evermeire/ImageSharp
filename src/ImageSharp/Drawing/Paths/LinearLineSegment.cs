@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Shapes
+namespace ImageSharp.Drawing.Paths
 {
 
     using System;
@@ -26,14 +26,23 @@ namespace ImageSharp.Shapes
         }
 
         public LinearLineSegment(params Point[] points)
-           : this(points?.Select(x=>x.ToVector2()))
+           : this(points?.Select(x => x.ToVector2()))
+        {
+        }
+
+        public LinearLineSegment(params PointF[] points)
+           : this(points?.Select(x => x.ToVector2()))
+        {
+        }
+
+        public LinearLineSegment(IEnumerable<PointF> points)
+           : this(points?.Select(x => x.ToVector2()))
         {
         }
 
         public LinearLineSegment(IEnumerable<Point> points)
            : this(points?.Select(x => x.ToVector2()))
         {
-          
         }
 
         public IEnumerable<Vector2> Simplify()

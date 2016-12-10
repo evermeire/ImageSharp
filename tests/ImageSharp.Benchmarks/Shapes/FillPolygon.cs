@@ -9,43 +9,51 @@ namespace ImageSharp.Benchmarks
     using System.Drawing.Drawing2D;
 
     using BenchmarkDotNet.Attributes;
-    using Shapes;
     using CoreImage = ImageSharp.Image;
-    using CoreSize = ImageSharp.Size;
+    using CoreBrushes = ImageSharp.Drawing.Brushes;
+    using CorePoint = ImageSharp.Point;
+    using System.IO;
 
-    public class SolidSimpleShape
+    public class FillPolygon
     {
-        [Benchmark(Baseline = true, Description = "System.Drawing Draw Solid Polygon")]
-        public Size DrawSolidPolygonSystemDrawing()
+        [Benchmark(Baseline = true, Description = "System.Drawing Fill Polygon")]
+        public void DrawSolidPolygonSystemDrawing()
         {
             using (Bitmap destination = new Bitmap(800, 800))
             {
 
                 using (Graphics graphics = Graphics.FromImage(destination))
                 {
+                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
                     graphics.FillPolygon(Brushes.HotPink, new[] {
                         new Point(10, 10),
                         new Point(550, 50),
                         new Point(200, 400)
                     });
                 }
-
-                return destination.Size;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    destination.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                }
             }
         }
 
-        [Benchmark(Description = "ImageSharp Draw Solid Polygon")]
-        public CoreSize DrawSolidPolygonCore()
+        [Benchmark(Description = "ImageSharp Fill Polygon")]
+        public void DrawSolidPolygonCore()
         {
             CoreImage image = new CoreImage(800, 800);
-            image.FillPolygon(new ImageSharp.Brushes.SolidBrush(ImageSharp.Color.HotPink), 
+            image.FillPolygon(CoreBrushes.HotPink,
                  new[] {
-                     new ImageSharp.Point(10, 10),
-                     new ImageSharp.Point(550, 50),
-                     new ImageSharp.Point(200, 400)
+                     new CorePoint(10, 10),
+                     new CorePoint(550, 50),
+                     new CorePoint(200, 400)
                  }
                 );
-            return new CoreSize(image.Width, image.Height);
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.SaveAsBmp(ms);
+            }
         }
     }
 }
