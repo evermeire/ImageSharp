@@ -17,7 +17,7 @@ namespace ImageSharp.Drawing.Processors
     /// </summary>
     /// <typeparam name="TColor">The pixel format.</typeparam>
     /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
-    public class FillProcessor<TColor, TPacked> : ImageFilter<TColor, TPacked>
+    public class FillProcessor<TColor, TPacked> : ImageFilteringProcessor<TColor, TPacked>
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
@@ -43,12 +43,13 @@ namespace ImageSharp.Drawing.Processors
             this.layer = layer;
             this.brush = brush;            
         }
-
+        
         /// <inheritdoc/>
         protected override void Apply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
+            
 
             // Align start/end positions.
             int minX = Math.Max(0, startX);
