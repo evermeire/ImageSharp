@@ -16,7 +16,7 @@ namespace ImageSharp.Drawing.Processors
     /// </summary>
     /// <typeparam name="TColor">The pixel format.</typeparam>
     /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
-    internal abstract class ShapeProcessorBase<TColor, TPacked> : ImageFilter<TColor, TPacked>
+    internal abstract class ShapeProcessorBase<TColor, TPacked> : ImageFilteringProcessor<TColor, TPacked>
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
@@ -39,7 +39,7 @@ namespace ImageSharp.Drawing.Processors
         protected abstract float Opacity(float distance);
 
         protected abstract int DrawPadding { get; }
-
+   
         /// <inheritdoc/>
         protected override void Apply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
         {
