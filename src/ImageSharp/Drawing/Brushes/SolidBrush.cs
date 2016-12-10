@@ -3,9 +3,9 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Brushes
+namespace ImageSharp.Drawing
 {
-    using Shapes;
+    using Processing;
     using System;
     using System.Collections.Generic;
     using System.Numerics;
@@ -46,10 +46,9 @@ namespace ImageSharp.Brushes
             }
         }
 
-        public IBrushApplicator CreateApplicator(Rectangle region)
+        public IBrushApplicator CreateApplicator(RectangleF region)
         {
-            
-                return new SolidBrushApplicator(color);
+            return new SolidBrushApplicator(color);
         }
     }
 }

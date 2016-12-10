@@ -1,5 +1,5 @@
 ﻿
-namespace ImageSharp.Shapes
+namespace ImageSharp.Drawing
 {
 
     using System;

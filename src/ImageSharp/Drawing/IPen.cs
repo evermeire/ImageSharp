@@ -3,16 +3,16 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Brushes
+namespace ImageSharp.Drawing
 {
-    using Shapes;
     using System;
 
     /// <summary>
     /// interface preresenting a brush
     /// </summary>
-    public interface IBrush
+    public interface IPen
     {
-        IBrushApplicator CreateApplicator(Rectangle region);
+        IBrush Brush { get; }
+        float Width { get; }
     }
 }

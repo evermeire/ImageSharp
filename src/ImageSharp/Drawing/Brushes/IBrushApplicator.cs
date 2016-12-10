@@ -3,9 +3,8 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Brushes
+namespace ImageSharp.Drawing.Processing
 {
-    using Shapes;
     using System;
 
     /// <summary>
