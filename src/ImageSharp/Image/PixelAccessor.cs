@@ -65,6 +65,32 @@ namespace ImageSharp
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PixelAccessor{TColor,TPacked}"/> class.
+        /// </summary>
+        /// <param name="width">Gets the width of the image represented by the pixel buffer.</param>
+        /// <param name="height">The height of the image represented by the pixel buffer.</param>
+        /// <param name="pixels">The pixel buffer.</param>
+        public PixelAccessor(int width, int height, TColor[] pixels)
+        {
+            Guard.NotNull(pixels, nameof(pixels));
+            Guard.MustBeGreaterThan(width, 0, nameof(width));
+            Guard.MustBeGreaterThan(height, 0, nameof(height));
+
+            if (pixels.Length != width * height)
+            {
+                throw new ArgumentException("Pixel array must have the length of Width * Height.");
+            }
+
+            this.Width = width;
+            this.Height = height;
+            this.pixelsHandle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
+            this.dataPointer = this.pixelsHandle.AddrOfPinnedObject();
+            this.pixelsBase = (byte*)this.dataPointer.ToPointer();
+            this.PixelSize = Unsafe.SizeOf<TPacked>();
+            this.RowStride = this.Width * this.PixelSize;
+        }
+
+        /// <summary>
         /// Finalizes an instance of the <see cref="PixelAccessor{TColor,TPacked}"/> class.
         /// </summary>
         ~PixelAccessor()
@@ -117,20 +143,6 @@ namespace ImageSharp
                 this.CheckCoordinates(x, y);
 
                 Unsafe.Write(this.pixelsBase + (((y * this.Width) + x) * Unsafe.SizeOf<TColor>()), value);
-            }
-        }
-
-        [Conditional("DEBUG")]
-        private void CheckCoordinates(int x, int y)
-        {
-            if (x < 0 || x >= this.Width)
-            {
-                throw new ArgumentOutOfRangeException(nameof(x), x, $"{x} is outwith the image bounds.");
-            }
-
-            if (y < 0 || y >= this.Height)
-            {
-                throw new ArgumentOutOfRangeException(nameof(y), y, $"{y} is outwith the image bounds.");
             }
         }
 
@@ -432,6 +444,28 @@ namespace ImageSharp
         protected byte* GetRowPointer(int targetY)
         {
             return this.pixelsBase + ((targetY * this.Width) * Unsafe.SizeOf<TColor>());
+        }
+
+        /// <summary>
+        /// Checks the coordinates to ensure they are within bounds.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the pixel. Must be greater than zero and smaller than the width of the pixel.</param>
+        /// <param name="y">The y-coordinate of the pixel. Must be greater than zero and smaller than the width of the pixel.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if the coordinates are not within the bounds of the image.
+        /// </exception>
+        [Conditional("DEBUG")]
+        private void CheckCoordinates(int x, int y)
+        {
+            if (x < 0 || x >= this.Width)
+            {
+                throw new ArgumentOutOfRangeException(nameof(x), x, $"{x} is outwith the image bounds.");
+            }
+
+            if (y < 0 || y >= this.Height)
+            {
+                throw new ArgumentOutOfRangeException(nameof(y), y, $"{y} is outwith the image bounds.");
+            }
         }
     }
 }
