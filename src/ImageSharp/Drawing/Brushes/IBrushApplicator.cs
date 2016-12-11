@@ -10,7 +10,7 @@ namespace ImageSharp.Drawing.Processing
     /// <summary>
     /// interface preresenting a brush
     /// </summary>
-    public interface IBrushApplicator : IDisposable
+    public interface IBrushApplicator
     {
         Color GetColor(int x, int y);
     }

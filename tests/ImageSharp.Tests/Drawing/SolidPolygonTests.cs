@@ -49,7 +49,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByFilledPolygonOpacity()
         {
-            string path = CreateOutputDirectory("Polygons");
+            string path = CreateOutputDirectory("SolidPolygons");
             var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 150),

@@ -14,8 +14,7 @@ namespace ImageSharp.Drawing
         /// <summary>
         /// the distance of the point from the outline of the shape, if the value is negative it is inside the polygon bounds
         /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
+        /// <param name="point">The point</param>
         /// <returns></returns>
         float Distance(int x, int y);
     }

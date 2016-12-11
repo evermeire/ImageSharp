@@ -1,4 +1,4 @@
-﻿// <copyright file="DrawProcessor.cs" company="James Jackson-South">
+﻿// <copyright file="FillProcessor.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -13,7 +13,7 @@ namespace ImageSharp.Drawing.Processors
     using ImageSharp.Processors;
 
     /// <summary>
-    /// Combines two images together by blending the pixels.
+    /// Using the bursh as a source of pixels colors blends the brush color with source.
     /// </summary>
     /// <typeparam name="TColor">The pixel format.</typeparam>
     /// <typeparam name="TPacked">The packed format. <example>uint, long, float.</example></typeparam>
@@ -21,35 +21,33 @@ namespace ImageSharp.Drawing.Processors
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
-        /// <summary>
-        /// The epsilon for comparing floating point numbers.
-        /// </summary>
         private const float Epsilon = 0.001f;
 
-        /// <summary>
-        /// The brush to apply.
-        /// </summary>
         private readonly IBrush brush;
-        private readonly FillLayer layer;
+
+        private readonly TargetLayer sourceLayer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BrushProcessor{T,TP}"/> class.
+        /// Initializes a new instance of the <see cref="FillProcessor{TColor, TPacked}"/> class.
         /// </summary>
-        /// <param name="brush">
-        /// The brush to apply to currently processing image.
+        /// <param name="brush">The brush to source pixel colors from.</param>
+        /// <param name="sourceLayer">
+        /// The layer to treat the source as. 
+        /// If <see cref="TargetLayer.Foreground"/> then take the <paramref name="brush"/> 
+        /// and apply it under the source image, else apply the <paramref name="brush"/> on top 
+        /// of the source image
         /// </param>
-        public FillProcessor(IBrush brush, FillLayer layer = FillLayer.OverSource)
+        public FillProcessor(IBrush brush, TargetLayer sourceLayer = TargetLayer.Background)
         {
-            this.layer = layer;
-            this.brush = brush;            
+            this.sourceLayer = sourceLayer;
+            this.brush = brush;
         }
-        
+
         /// <inheritdoc/>
         protected override void Apply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
-            
 
             // Align start/end positions.
             int minX = Math.Max(0, startX);
@@ -67,54 +65,55 @@ namespace ImageSharp.Drawing.Processors
             {
                 startY = 0;
             }
-
-            //calculate 
+            
+            // create a pixcel applicator (this will be important when there is a gradient or image brush)
+            var applicator = brush.CreateApplicator(sourceRectangle);
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
-                using (var applicator = brush.CreateApplicator(sourceRectangle))
-                {
-                    Parallel.For(
-                        minY,
-                        maxY,
-                        this.ParallelOptions,
-                        y =>
+                Parallel.For(
+                    minY,
+                    maxY,
+                    this.ParallelOptions,
+                    y =>
+                    {
+                        int offsetY = y - startY;
+                        for (int x = minX; x < maxX; x++)
                         {
-                            int offsetY = y - startY;
-                            for (int x = minX; x < maxX; x++)
+                            int offsetX = x - startX;
+
+                            var color = applicator.GetColor(offsetX, offsetY).ToVector4();
+                            Vector4 backgroundColor = sourcePixels[offsetX, offsetY].ToVector4();
+
+                            //we want the brush color under the source image, flip the color order
+                            if (this.sourceLayer == TargetLayer.Foreground)
                             {
-                                int offsetX = x - startX;
+                                var tmp = color;
+                                color = backgroundColor;
+                                backgroundColor = tmp;
+                            }
 
-                                var color = applicator.GetColor(offsetX, offsetY).ToVector4();
-                                Vector4 backgroundColor = sourcePixels[offsetX, offsetY].ToVector4();
+                            // based on the alpha of the foreground color shift the background color towards the forgound by the opactiy level
+                            // need to consider what opactiy should be like when doing this???
+                            // this logic seems to be working for now
+                            float a = color.W;
 
-                                if(this.layer == FillLayer.UnderSource)
-                                {
-                                    //we want the brush color under the source image, flip the color order
-                                    var tmp = color;
-                                    color = backgroundColor;
-                                    backgroundColor = tmp;
-                                }
+                            if (Math.Abs(a) < Epsilon)
+                            {
+                                color = backgroundColor;
+                            }
+                            else if (a < 1 && a > 0)
+                            {
+                                color.W = 1;
+                                color = Vector4.Lerp(backgroundColor, color, a);
+                            }
 
-                                float a = color.W;
-
-                                if (Math.Abs(a) < Epsilon)
-                                {
-                                    color = backgroundColor;
-                                }
-                                else if (a < 1 && a > 0)
-                                {
-                                    color.W = 1;
-                                    color = Vector4.Lerp(backgroundColor, color, a);
-                                }
-
-                                TColor packed = default(TColor);
-                                packed.PackFromVector4(color);
-                                sourcePixels[offsetX, offsetY] = packed;
-                            }                            
-                        });
-                }
+                            TColor packed = default(TColor);
+                            packed.PackFromVector4(color);
+                            sourcePixels[offsetX, offsetY] = packed;
+                        }
+                    });
             }
-        }        
+        }
     }
 }

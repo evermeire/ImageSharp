@@ -16,6 +16,14 @@ namespace ImageSharp
     /// </summary>
     public static partial class ImageExtensions
     {
+        /// <summary>
+        /// Flood fills the image with the specified brush.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="brush">The brush.</param>
+        /// <returns></returns>
         public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush)
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
@@ -23,6 +31,15 @@ namespace ImageSharp
             return source.Process(new FillProcessor<TColor, TPacked>(brush));
         }
 
+        /// <summary>
+        /// Flood fills the image in the shape o fhte provided polygon with the specified brush..
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="brush">The brush.</param>
+        /// <param name="shape">The shape.</param>
+        /// <returns></returns>
         public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, IShape shape)
           where TColor : struct, IPackedPixel<TPacked>
           where TPacked : struct
@@ -30,6 +47,15 @@ namespace ImageSharp
             return source.Process(new FillShapeProcessor<TColor, TPacked>(brush, shape));
         }
 
+        /// <summary>
+        /// Flood fills the image in the shape of a Linear polygon described by the points
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="brush">The brush.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
         public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
@@ -37,6 +63,15 @@ namespace ImageSharp
             return source.Process(new FillShapeProcessor<TColor, TPacked>(brush, new SimplePolygon(new LinearLineSegment(points))));
         }
 
+        /// <summary>
+        /// Flood fills the image in the shape of a Linear polygon described by the points
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="brush">The brush.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
         public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, Point[] points)
          where TColor : struct, IPackedPixel<TPacked>
          where TPacked : struct

@@ -1,4 +1,4 @@
-﻿// <copyright file="DrawProcessor.cs" company="James Jackson-South">
+﻿// <copyright file="FillShapeProcessor.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -14,7 +14,9 @@ namespace ImageSharp.Drawing.Processors
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
+        const float antialiasFactor = 0.75f;
         private readonly int drawPadding;
+
         public FillShapeProcessor(IBrush brush, IShape shape) : base(brush, shape)
         {
             drawPadding = (int)Math.Ceiling(antialiasFactor);
@@ -22,11 +24,8 @@ namespace ImageSharp.Drawing.Processors
 
         protected override int DrawPadding => drawPadding;
 
-        const float antialiasFactor = 0.75f;
         protected override float Opacity(float distance)
         {
-            
-
             if (distance <= 0)
             {
                 return 1;

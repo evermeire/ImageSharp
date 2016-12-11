@@ -44,7 +44,8 @@ namespace ImageSharp.Drawing.Processors
             {
                 distance = distance - halfThickness;
             }
-
+            
+            //convert distance to opacity for anti-aliasing
             if (distance < antialiasFactor)
             {
                 return 1 - (distance / antialiasFactor);
