@@ -8,20 +8,12 @@ namespace ImageSharp.Drawing
     using System.Numerics;
     using System.Threading.Tasks;
 
-    public interface ILineSegment : IPath
+    public interface ILineSegment
     {
-
-        PointF Start { get; }
-
-        PointF End { get; }
-
-        IEnumerable<PointF> CrossingPoints(PointF start, PointF end);
-
         /// <summary>
-        /// the distance of the point from the outline of the shape, if the value is negative it is inside the polygon bounds
+        /// Returns trhe current <see cref="ILineSegment"/> implmenetation as a simple linear path.
         /// </summary>
-        /// <param name="point">The point</param>
         /// <returns></returns>
-        float Distance(PointF point);
+        IEnumerable<Vector2> AsSimpleLinearPath();
     }
 }

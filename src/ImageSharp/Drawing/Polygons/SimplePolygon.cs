@@ -31,7 +31,7 @@ namespace ImageSharp.Drawing.Polygons
         }
 
         public SimplePolygon(IEnumerable<Vector2> points)
-            : this(new LinearLineSegment(points))
+            : this(new LinearLineSegment(points.ToArray()))
         {
         }
 
@@ -39,25 +39,10 @@ namespace ImageSharp.Drawing.Polygons
         {
             innerPath = new InternalPath(segments, true);
         }
-
-        bool PointInPolygon(Vector2 point)
-        {
-            if (!innerPath.Bounds.Contains(point.X, point.Y))
-            {
-                return false;
-            }
-
-            // create a point we know is outside the polygon
-            var origon = new Vector2(innerPath.Bounds.Left - 1, point.Y);
-
-            var points = this.innerPath.CrossingPoints(origon, point);
-
-            return points.Count() % 2 == 1;
-        }
-
+        
         public float Distance(Vector2 point)
         {
-            bool isInside = PointInPolygon(point);
+            bool isInside = innerPath.PointInPolygon(point);
 
             var dist = innerPath.DistanceFromPath(point);
 
@@ -74,6 +59,6 @@ namespace ImageSharp.Drawing.Polygons
         float IShape.Distance(int x, int y)
         {
             return this.Distance(new Vector2(x, y));
-        }
+        }        
     }
 }

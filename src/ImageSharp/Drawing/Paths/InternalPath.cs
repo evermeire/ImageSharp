@@ -15,76 +15,156 @@ namespace ImageSharp.Drawing.Paths
 
     internal class InternalPath
     {
-        private readonly ILineSegment[] segments;
+        internal readonly Vector2[] points;
+        private readonly bool closedPath;
 
-        internal InternalPath(IEnumerable<ILineSegment> segments, bool ensureClosed)
+        internal InternalPath(IEnumerable<ILineSegment> segments, bool isClosedPath)
         {
             Guard.NotNull(segments, nameof(segments));
 
-            this.segments = FixSegments(segments, ensureClosed);
+            this.points = FixSegments(segments);
+            this.closedPath = isClosedPath;
             
-            var minX = segments.Min(x => x.Bounds.Top);
-            var maxX = segments.Max(x => x.Bounds.Bottom);
-            var minY = segments.Min(x => x.Bounds.Left);
-            var maxY = segments.Max(x => x.Bounds.Right);
+            var minX = points.Min(x => x.X);
+            var maxX = points.Max(x => x.X);
+            var minY = points.Min(x => x.Y);
+            var maxY = points.Max(x => x.Y);
 
             Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
 
-        private ILineSegment[] FixSegments(IEnumerable<ILineSegment> segments, bool ensureClosed)
+        private Vector2[] FixSegments(IEnumerable<ILineSegment> segments)
         {
-            List<ILineSegment> results = new List<ILineSegment>();
-            PointF? first = null;
-            PointF? last = null;
-            foreach(var s in segments)
-            {
-                if(first == null)
-                {
-                    first = s.Start;
-                }
-
-                if(last != null)
-                {
-                    if(s.Start != last.Value)
-                    {
-                        // is there a gap between segments?
-                        // add int a linear segment joining them
-                        results.Add(new LinearLineSegment(last.Value, s.Start));
-                    }
-                }
-
-                results.Add(s);
-
-                last = s.End;
-            }
-
-            if (ensureClosed)
-            {
-                if (first.Value != last.Value)
-                {
-                    // is there a gap between last segment and first segment?
-                    // add in a linear segment joining them
-                    results.Add(new LinearLineSegment(last.Value, first.Value));
-                }
-            }
-
-            return results.ToArray();
+            return segments.SelectMany(x => x.AsSimpleLinearPath()).ToArray();
         }
 
-
-        public IEnumerable<Vector2> CrossingPoints(Vector2 start, Vector2 end)
+        private float[] constant;
+        private float[] multiple;
+        object locker = new object();
+        bool calculated = false;
+        
+        private void CalculateConstants()
         {
-            var s = new PointF(start);
-            var e = new PointF(end);
+            if (calculated) return;
 
-            var points = this.segments.SelectMany(x => x.CrossingPoints(s, e)).Select(x=>x.ToVector2()).ToList();
-            return points;
+            lock (locker)
+            {
+                if (calculated) return;
+
+                var poly = points;
+                var polyCorners = poly.Length;
+                constant = new float[polyCorners];
+                multiple = new float[polyCorners];
+                int i, j = polyCorners - 1;
+
+                for (i = 0; i < polyCorners; i++)
+                {
+                    if (poly[j].Y == poly[i].Y)
+                    {
+                        constant[i] = poly[i].X;
+                        multiple[i] = 0;
+                    }
+                    else
+                    {
+                        constant[i] = poly[i].X - (poly[i].Y * poly[j].X) / (poly[j].Y - poly[i].Y) + (poly[i].Y * poly[i].X) / (poly[j].Y - poly[i].Y);
+                        multiple[i] = (poly[j].X - poly[i].X) / (poly[j].Y - poly[i].Y);
+                    }
+                    j = i;
+                }
+
+                calculated = true;
+            }
+        }
+
+        private float DistanceSquared(Vector2 start, Vector2 end, Vector2 point)
+        {
+            var px = end.X - start.X;
+            var py = end.Y - start.Y;
+
+            float something = px * px + py * py;
+
+            var u = ((point.X - start.X) * px + (point.Y - start.Y) * py) / something;
+
+            if (u > 1)
+            {
+                u = 1;
+            }
+            else if (u < 0)
+            {
+                u = 0;
+            }
+
+            var x = start.X + u * px;
+            var y = start.Y + u * py;
+
+            var dx = x - point.X;
+            var dy = y - point.Y;
+
+            return dx * dx + dy * dy;
         }
 
         public float DistanceFromPath(Vector2 point)
         {
-            var p = new PointF(point);
-            return this.segments.Select(x => x.Distance(p)).Min();
+            float distance = float.MaxValue;
+            var polyCorners = points.Length;
+
+            if (!closedPath)
+            {
+                polyCorners -= 1;
+            }
+
+            for (var i = 0; i < polyCorners; i++)
+            {
+                var next = i + 1;
+                if (closedPath && next == polyCorners)
+                {
+                    next = 0;
+                }
+
+                var lastDistance = DistanceSquared(points[i], points[next], point);
+
+                if (lastDistance < distance)
+                {
+                    distance = lastDistance;
+                }
+            }
+
+            return (float)Math.Sqrt(distance);
+        }
+
+
+        public bool PointInPolygon(Vector2 point)
+        {
+            //can only be closed if its a closed path
+            if (!closedPath)
+            {
+                return false;
+            }
+
+            if (!Bounds.Contains(point.X, point.Y))
+            {
+                return false;
+            }
+
+            CalculateConstants();
+
+            var poly = points;
+            var polyCorners = poly.Length;
+
+            var j = polyCorners - 1;
+            bool oddNodes = false;
+
+            for (var i = 0; i < polyCorners; i++)
+            {
+                if ((poly[i].Y < point.Y && poly[j].Y >= point.Y
+                || poly[j].Y < point.Y && poly[i].Y >= point.Y))
+                {
+                    oddNodes ^= (point.Y * multiple[i] + constant[i] < point.X);
+                }
+                j = i;
+            }
+
+            return oddNodes;
         }
 
         public RectangleF Bounds

@@ -14,7 +14,7 @@ namespace ImageSharp.Drawing.Processors
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
-        const float antialiasFactor = 0.75f;
+        const float antialiasFactor = 1f;
         private readonly int drawPadding;
 
         public FillShapeProcessor(IBrush brush, IShape shape) : base(brush, shape)
