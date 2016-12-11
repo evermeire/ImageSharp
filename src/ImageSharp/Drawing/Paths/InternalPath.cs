@@ -15,100 +15,76 @@ namespace ImageSharp.Drawing.Paths
 
     internal class InternalPath
     {
-        public Vector2[] Points;
+        private readonly ILineSegment[] segments;
 
-        internal InternalPath(IEnumerable<ILineSegment> segment)
+        internal InternalPath(IEnumerable<ILineSegment> segments, bool ensureClosed)
         {
-            Guard.NotNull(segment, nameof(segment));
+            Guard.NotNull(segments, nameof(segments));
 
-            Points = CalculatePoints(segment);
-
-            var minX = Points.Min(x=>x.X);
-            var maxX = Points.Max(x => x.X);
-            var minY = Points.Min(x => x.Y);
-            var maxY = Points.Max(x => x.Y);
+            this.segments = FixSegments(segments, ensureClosed);
+            
+            var minX = segments.Min(x => x.Bounds.Top);
+            var maxX = segments.Max(x => x.Bounds.Bottom);
+            var minY = segments.Min(x => x.Bounds.Left);
+            var maxY = segments.Max(x => x.Bounds.Right);
 
             Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
 
-        private static Vector2[] CalculatePoints(IEnumerable<ILineSegment> segments)
+        private ILineSegment[] FixSegments(IEnumerable<ILineSegment> segments, bool ensureClosed)
         {
-            return CalculatePointsInner(segments).ToArray();
-        }
-
-        private static IEnumerable<Vector2> CalculatePointsInner(IEnumerable<ILineSegment> segments)
-        {
-            //used to deduplicate
-            HashSet<Vector2> pointHash = new HashSet<Vector2>();
-
-            foreach (var segment in segments)
+            List<ILineSegment> results = new List<ILineSegment>();
+            PointF? first = null;
+            PointF? last = null;
+            foreach(var s in segments)
             {
-                var points = segment.Simplify();
-                foreach (var p in points)
+                if(first == null)
                 {
-                    if (!pointHash.Contains(p))
+                    first = s.Start;
+                }
+
+                if(last != null)
+                {
+                    if(s.Start != last.Value)
                     {
-                        pointHash.Add(p);
-                        yield return p;
+                        // is there a gap between segments?
+                        // add int a linear segment joining them
+                        results.Add(new LinearLineSegment(last.Value, s.Start));
                     }
                 }
-            }
-        }
 
-        private float DistanceSquared(Vector2 start, Vector2 end,  Vector2 point)
-        {
-            var px = end.X - start.X;
-            var py = end.Y - start.Y;
+                results.Add(s);
 
-            float something = px * px + py * py;
-
-            var u = ((point.X - start.X) * px + (point.Y - start.Y) * py) / something;
-
-            if (u > 1)
-            {
-                u = 1;
-            }
-            else if (u < 0)
-            {
-                u = 0;
+                last = s.End;
             }
 
-            var x = start.X + u * px;
-            var y = start.Y + u * py;
-
-            var dx = x - point.X;
-            var dy = y - point.Y;
-
-            return dx * dx + dy * dy;
-        }
-
-        public float DistanceFromPath(Vector2 point, bool closedPath)
-        {
-            float distance = float.MaxValue;
-            var polyCorners = Points.Length;
-
-            if(!closedPath)
+            if (ensureClosed)
             {
-                polyCorners -= 1;
-            }
-
-            for (var i = 0; i < polyCorners; i++)
-            {
-                var next = i + 1;
-                if (closedPath && next == polyCorners)
+                if (first.Value != last.Value)
                 {
-                    next = 0;
-                }
-
-                var lastDistance = DistanceSquared(Points[i], Points[next], point);
-
-                if (lastDistance < distance)
-                {
-                    distance = lastDistance;
+                    // is there a gap between last segment and first segment?
+                    // add in a linear segment joining them
+                    results.Add(new LinearLineSegment(last.Value, first.Value));
                 }
             }
 
-            return (float)Math.Sqrt(distance);
+            return results.ToArray();
+        }
+
+
+        public IEnumerable<Vector2> CrossingPoints(Vector2 start, Vector2 end)
+        {
+            var s = new PointF(start);
+            var e = new PointF(end);
+
+            var points = this.segments.SelectMany(x => x.CrossingPoints(s, e)).Select(x=>x.ToVector2()).ToList();
+            return points;
+        }
+
+        public float DistanceFromPath(Vector2 point)
+        {
+            var p = new PointF(point);
+            return this.segments.Select(x => x.Distance(p)).Min();
         }
 
         public RectangleF Bounds

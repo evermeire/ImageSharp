@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace ImageSharp.Drawing.Processors
 {
-    public enum FillLayer
+    public enum TargetLayer
     {
-        OverSource = 0,
-        UnderSource 
+        Foreground = 0,
+        Background = 1 
     }
 }

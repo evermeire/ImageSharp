@@ -37,35 +37,9 @@ namespace ImageSharp.Drawing.Polygons
 
         public SimplePolygon(IEnumerable<ILineSegment> segments)
         {
-            innerPath = new InternalPath(segments);
-            CalculateConstants();
+            innerPath = new InternalPath(segments, true);
         }
 
-
-        private void CalculateConstants()
-        {
-            var poly = innerPath.Points;
-            var polyCorners = poly.Length;
-            constant = new float[polyCorners];
-            multiple = new float[polyCorners];
-            int i, j = polyCorners - 1;
-
-            for (i = 0; i < polyCorners; i++)
-            {
-                if (poly[j].Y == poly[i].Y)
-                {
-                    constant[i] = poly[i].X;
-                    multiple[i] = 0;
-                }
-                else
-                {
-                    constant[i] = poly[i].X - (poly[i].Y * poly[j].X) / (poly[j].Y - poly[i].Y) + (poly[i].Y * poly[i].X) / (poly[j].Y - poly[i].Y);
-                    multiple[i] = (poly[j].X - poly[i].X) / (poly[j].Y - poly[i].Y);
-                }
-                j = i;
-            }
-        }
-        
         bool PointInPolygon(Vector2 point)
         {
             if (!innerPath.Bounds.Contains(point.X, point.Y))
@@ -73,30 +47,19 @@ namespace ImageSharp.Drawing.Polygons
                 return false;
             }
 
-            var poly = innerPath.Points;
-            var polyCorners = poly.Length;
+            // create a point we know is outside the polygon
+            var origon = new Vector2(innerPath.Bounds.Left - 1, point.Y);
 
-            var j = polyCorners - 1;
-            bool oddNodes = false;
+            var points = this.innerPath.CrossingPoints(origon, point);
 
-            for (var i = 0; i < polyCorners; i++)
-            {
-                if ((poly[i].Y < point.Y && poly[j].Y >= point.Y
-                || poly[j].Y < point.Y && poly[i].Y >= point.Y))
-                {
-                    oddNodes ^= (point.Y * multiple[i] + constant[i] < point.X);
-                }
-                j = i;
-            }
-
-            return oddNodes;
+            return points.Count() % 2 == 1;
         }
 
         public float Distance(Vector2 point)
         {
             bool isInside = PointInPolygon(point);
 
-            var dist = innerPath.DistanceFromPath(point, true);
+            var dist = innerPath.DistanceFromPath(point);
 
             if (isInside)
             {

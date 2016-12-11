@@ -19,14 +19,14 @@ namespace ImageSharp.Drawing.Paths
 
         internal Path(params ILineSegment[] segment)
         {
-            innerPath = new InternalPath(segment);
+            innerPath = new InternalPath(segment, false);
         }
 
         public RectangleF Bounds => innerPath.Bounds;
-
+        
         float IPath.Distance(int x, int y)
         {
-            return innerPath.DistanceFromPath(new Vector2(x, y), false);
+            return innerPath.DistanceFromPath(new Vector2(x, y));
         }
     }
 }

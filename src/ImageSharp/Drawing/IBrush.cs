@@ -9,10 +9,23 @@ namespace ImageSharp.Drawing
     using System;
 
     /// <summary>
-    /// interface preresenting a brush
+    /// interface representing a brush
     /// </summary>
+    /// <remarks>
+    /// A brush is a simple interface that will return an <see cref="IBrushApplicator"/> that will perform the
+    /// logic for converting a pixel location to a <see cref="Color"/>.
+    /// </remarks>
     public interface IBrush
     {
+        /// <summary>
+        /// Creates the applicator for this bursh.
+        /// </summary>
+        /// <param name="region">The region the brush will be applied to.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The <paramref name="region"/> when being applied to things like shapes would ussually be the 
+        /// bounding box of the shape not necorserrally the shape of the whole image 
+        /// </remarks>
         IBrushApplicator CreateApplicator(RectangleF region);
     }
 }

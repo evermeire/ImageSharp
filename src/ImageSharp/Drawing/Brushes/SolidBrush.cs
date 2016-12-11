@@ -40,10 +40,6 @@ namespace ImageSharp.Drawing
             {
                 return color;
             }
-            public void Dispose()
-            {
-                //noop
-            }
         }
 
         public IBrushApplicator CreateApplicator(RectangleF region)
