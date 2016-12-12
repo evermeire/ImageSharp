@@ -46,7 +46,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawShapeProcessor<TColor, TPacked>(new Pen(brush, thickness), shape));
+            return source.DrawPolygon(new Pen(brush, thickness), shape);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawShapeProcessor<TColor, TPacked>(new Pen(brush, thickness), new SimplePolygon(new LinearLineSegment(points))));
+            return source.DrawPolygon(new Pen(brush, thickness), new Polygon(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawShapeProcessor<TColor, TPacked>(pen, new SimplePolygon(new LinearLineSegment(points))));
+            return source.DrawPolygon(pen, new Polygon(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawShapeProcessor<TColor, TPacked>(new Pen(brush, thickness), new SimplePolygon(new LinearLineSegment(points))));
+            return source.DrawPolygon(new Pen(brush, thickness), new Polygon(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -110,7 +110,23 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawShapeProcessor<TColor, TPacked>(pen, new SimplePolygon(new LinearLineSegment(points))));
+            return source.DrawPolygon(pen, new Polygon(new LinearLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the path with the provided pen.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="pen">The pen.</param>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, IPath path)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.Process(new DrawPathProcessor<TColor, TPacked>(pen, path));
         }
 
         /// <summary>
@@ -128,22 +144,6 @@ namespace ImageSharp
            where TPacked : struct
         {
             return source.DrawPath(new Pen(brush, thickness), path);
-        }
-
-        /// <summary>
-        /// Draws the path with the provided pen.
-        /// </summary>
-        /// <typeparam name="TColor">The type of the color.</typeparam>
-        /// <typeparam name="TPacked">The type of the packed.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="pen">The pen.</param>
-        /// <param name="path">The path.</param>
-        /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, IPath path)
-           where TColor : struct, IPackedPixel<TPacked>
-           where TPacked : struct
-        {
-            return source.Process(new DrawPathProcessor<TColor, TPacked>(pen, path));
         }
 
         /// <summary>

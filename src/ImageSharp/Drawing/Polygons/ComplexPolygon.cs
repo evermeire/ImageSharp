@@ -8,20 +8,20 @@ namespace ImageSharp.Drawing.Polygons
 {
     internal class ComplexPolygon : IShape
     {
-        private readonly IEnumerable<SimplePolygon> simplePolygons;
-        private IEnumerable<SimplePolygon> holes;
-        private IEnumerable<SimplePolygon> outlines;
+        private readonly IEnumerable<Polygon> simplePolygons;
+        private IEnumerable<Polygon> holes;
+        private IEnumerable<Polygon> outlines;
 
         public ComplexPolygon(IEnumerable<ILineSegment> segments) 
-            :this(new SimplePolygon(segments), null)
+            :this(new Polygon(segments), null)
         { }
 
-        public ComplexPolygon(SimplePolygon outline, IEnumerable<SimplePolygon> holes)
+        public ComplexPolygon(Polygon outline, IEnumerable<Polygon> holes)
         {
             Guard.NotNull(outline, nameof(outline));
 
             this.outlines = new[] { outline };
-            this.holes = holes ?? Enumerable.Empty<SimplePolygon>();
+            this.holes = holes ?? Enumerable.Empty<Polygon>();
 
             var minX = outlines.Min(x => x.Bounds.Left);
             var maxX = outlines.Max(x => x.Bounds.Right);

@@ -14,10 +14,9 @@ namespace ImageSharp.Drawing.Polygons
     using System.Threading.Tasks;
 
     /// <summary>
-    /// a <see cref="SimplePolygon"/> represents a contiguos bound region 
-    /// that will act as a hole or a solid
+    /// a <see cref="Polygon"/> represents a contiguose bound region 
     /// </summary>
-    internal class SimplePolygon : IShape
+    public sealed class Polygon : IShape
     {
         private float[] constant;
         private float[] multiple;
@@ -25,17 +24,12 @@ namespace ImageSharp.Drawing.Polygons
 
         public RectangleF Bounds => innerPath.Bounds;
 
-        public SimplePolygon(params ILineSegment[] segments)
+        public Polygon(params ILineSegment[] segments)
             : this((IEnumerable<ILineSegment>)segments)
         {
         }
 
-        public SimplePolygon(IEnumerable<Vector2> points)
-            : this(new LinearLineSegment(points.ToArray()))
-        {
-        }
-
-        public SimplePolygon(IEnumerable<ILineSegment> segments)
+        public Polygon(IEnumerable<ILineSegment> segments)
         {
             innerPath = new InternalPath(segments, true);
         }
@@ -56,7 +50,7 @@ namespace ImageSharp.Drawing.Polygons
             }
         }
 
-        float IShape.Distance(int x, int y)
+        public float Distance(int x, int y)
         {
             return this.Distance(new Vector2(x, y));
         }        

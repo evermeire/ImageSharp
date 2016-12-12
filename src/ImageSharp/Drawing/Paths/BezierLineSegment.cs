@@ -17,7 +17,7 @@ namespace ImageSharp.Drawing.Paths
 
     public class BezierLineSegment : ILineSegment
     {
-        private const int SEGMENTS_PER_CURVE = 100;
+        private const int SEGMENTS_PER_CURVE = 50;
         private const float MINIMUM_SQR_DISTANCE = 0.01f;
 
         // This corresponds to about 172 degrees, 8 degrees from a traight line

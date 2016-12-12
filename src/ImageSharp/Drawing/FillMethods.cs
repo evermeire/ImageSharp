@@ -43,7 +43,7 @@ namespace ImageSharp
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
         {
-            return source.Process(new FillProcessor<TColor, TPacked>(new SolidBrush(color)));
+            return source.Fill(new SolidBrush(color));
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace ImageSharp
         /// <param name="brush">The brush.</param>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, IShape shape)
+        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, IShape shape)
           where TColor : struct, IPackedPixel<TPacked>
           where TPacked : struct
         {
@@ -75,7 +75,8 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new FillShapeProcessor<TColor, TPacked>(brush, new SimplePolygon(new LinearLineSegment(points))));
+            //using Polygon directly instead of LinearPolygon as its will have less inderection
+            return source.Fill(brush, new Polygon(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -91,7 +92,8 @@ namespace ImageSharp
          where TColor : struct, IPackedPixel<TPacked>
          where TPacked : struct
         {
-            return source.Process(new FillShapeProcessor<TColor, TPacked>(brush, new SimplePolygon(new LinearLineSegment(points))));
+            //using Polygon directly instead of LinearPolygon as its will have less inderection
+            return source.Fill(brush, new Polygon(new LinearLineSegment(points)));
         }
     }
 }

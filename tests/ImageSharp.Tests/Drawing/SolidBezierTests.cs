@@ -7,39 +7,39 @@ namespace ImageSharp.Tests.Drawing
 {
     using Drawing;
     using ImageSharp.Drawing;
+    using ImageSharp.Drawing.Polygons;
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Numerics;
     using Xunit;
 
-    public class Beziers : FileTestBase
+    public class SolidBezierTests : FileTestBase
     {
-
-
         [Fact]
-        public void ImageShouldBeOverlayedByBezierLine()
+        public void ImageShouldBeOverlayedByFilledPolygon()
         {
-            string path = CreateOutputDirectory("BezierLine");
+            string path = CreateOutputDirectory("SolidBezier");
+            var simplePath = new[] {
+                        new PointF(10, 400),
+                        new PointF(30, 10),
+                        new PointF(240, 30),
+                        new PointF(300, 400)
+            };
             var image = new Image(500, 500);
 
             using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawBeziers(Brushes.HotPink, 5, new[] {
-                        new PointF(10, 400),
-                        new PointF(30, 10),
-                        new PointF(240, 30),
-                        new PointF(300, 400)
-                    })
+                    .Fill(Brushes.HotPink,new BezierPolygon(simplePath))
                     .Save(output);
             }
 
             using (var sourcePixels = image.Lock())
             {
                 //top of curve
-                Assert.Equal(Color.HotPink, sourcePixels[138,115]);
+                Assert.Equal(Color.HotPink, sourcePixels[138, 115]);
 
                 //start points                
                 Assert.Equal(Color.HotPink, sourcePixels[10, 400]);
@@ -49,39 +49,36 @@ namespace ImageSharp.Tests.Drawing
                 Assert.Equal(Color.Blue, sourcePixels[30, 10]);
                 Assert.Equal(Color.Blue, sourcePixels[240, 30]);
 
-                // inside shape should be empty
-                Assert.Equal(Color.Blue, sourcePixels[200, 250]);
+                // inside shape should not be empty
+                Assert.Equal(Color.HotPink, sourcePixels[200, 250]);
             }
-
         }
 
-
         [Fact]
-        public void ImageShouldBeOverlayedBezierLineWithOpacity()
+        public void ImageShouldBeOverlayedByFilledPolygonOpacity()
         {
-            string path = CreateOutputDirectory("BezierLine");
-
-            var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
-            var brush = new SolidBrush(color);
-
-
-            var image = new Image(500, 500);
-            
-            using (FileStream output = File.OpenWrite($"{path}/Opacity.png"))
-            {
-                image
-                    .BackgroundColor(Color.Blue)
-                    .DrawBeziers(brush, 10, new[] {
+            string path = CreateOutputDirectory("SolidBezier");
+            var simplePath = new[] {
                         new PointF(10, 400),
                         new PointF(30, 10),
                         new PointF(240, 30),
                         new PointF(300, 400)
-                    })
+            };
+            var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
+            var brush = new SolidBrush(color);
+
+            var image = new Image(500, 500);
+
+            using (FileStream output = File.OpenWrite($"{path}/Opacity.png"))
+            {
+                image
+                    .BackgroundColor(Color.Blue)
+                    .Fill(brush, new BezierPolygon(simplePath))
                     .Save(output);
             }
 
             //shift background color towards forground color by the opacity amount
-            var mergedColor = new Color(Vector4.Lerp(Color.Blue.ToVector4(), Color.HotPink.ToVector4(), 150f/255f));
+            var mergedColor = new Color(Vector4.Lerp(Color.Blue.ToVector4(), Color.HotPink.ToVector4(), 150f / 255f));
 
             using (var sourcePixels = image.Lock())
             {
@@ -96,10 +93,10 @@ namespace ImageSharp.Tests.Drawing
                 Assert.Equal(Color.Blue, sourcePixels[30, 10]);
                 Assert.Equal(Color.Blue, sourcePixels[240, 30]);
 
-                // inside shape should be empty
-                Assert.Equal(Color.Blue, sourcePixels[200, 250]);
+                // inside shape should not be empty
+                Assert.Equal(mergedColor, sourcePixels[200, 250]);
             }
-        }       
+        }
         
     }
 }
