@@ -27,16 +27,57 @@ namespace ImageSharp.Drawing
             this.color = color;
         }
 
-        public class SolidBrushApplicator : IBrushApplicator
+        public class SolidBrushApplicator : BrushApplicatorBase
         {
-            private Color color;
 
+            private Color color;
+            private bool hasOpacitySet = false;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SolidBrushApplicator{TColor, TPacked}"/> class.
+            /// </summary>
+            /// <param name="color">The color.</param>
             public SolidBrushApplicator(Color color)
             {
                 this.color = color;
+                hasOpacitySet = this.color.A != 255;
+            }
+            
+            public override bool RequiresComposition
+            {
+                get
+                {
+                    return hasOpacitySet;
+                }
             }
 
-            public Color GetColor(int x, int y)
+            public virtual Color[] GetColor(int startX, int endX, int Y)
+            {
+                var result = new Color[endX - startX + 1];
+                for (var x = startX; x <= endX; x++)
+                {
+                    result[x - startX] = color;
+                }
+                return result;
+            }
+
+            public override Color[,] GetColor(int startX, int startY, int endX, int endY)
+            {
+                var maxX = endX - startX;
+                var maxY = endY - startY;
+                var colors = new Color[maxX+1, maxY+1];
+                for (var x = 0; x <= maxX; x++)
+                {
+                    for (var y = 0; y <= maxY; y++)
+                    {
+                        colors[x, y] = color;
+                    }
+                }
+
+                return colors;
+            }
+
+            public override Color GetColor(int x, int y)
             {
                 return color;
             }

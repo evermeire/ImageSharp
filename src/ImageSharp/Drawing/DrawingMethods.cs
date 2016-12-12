@@ -127,7 +127,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawPathProcessor<TColor, TPacked>(new Pen(brush, thickness), path));
+            return source.DrawPath(new Pen(brush, thickness), path);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawPathProcessor<TColor, TPacked>(new Pen(brush, thickness), new Path(new LinearLineSegment(points))));
+            return source.DrawPath(new Pen(brush, thickness), new Path(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawPathProcessor<TColor, TPacked>(pen, new Path(new LinearLineSegment(points))));
+            return source.DrawPath(pen, new Path(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawPathProcessor<TColor, TPacked>(new Pen(brush, thickness), new Path(new LinearLineSegment(points))));
+            return source.DrawPath(new Pen(brush, thickness), new Path(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -209,7 +209,81 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawPathProcessor<TColor, TPacked>(pen, new Path(new LinearLineSegment(points))));
+            return source.DrawPath(pen, new Path(new LinearLineSegment(points)));
         }
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// Draws the provided Points as an open Bezier path at the provided thickness with the supplied brush
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="brush">The brush.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, PointF[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPath(new Pen(brush, thickness), new Path(new BezierLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the provided Points as an open Bezier path with the supplied pen
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="pen">The pen.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, PointF[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPath(pen, new Path(new BezierLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the provided Points as an open Bezier path at the provided thickness with the supplied brush
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="brush">The brush.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, Point[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPath(new Pen(brush, thickness), new Path(new BezierLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the provided Points as an open Bezier path with the supplied pen
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="pen">The pen.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, Point[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPath(pen, new Path(new BezierLineSegment(points)));
+        }
+
     }
 }

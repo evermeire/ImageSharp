@@ -24,9 +24,7 @@ namespace ImageSharp.Drawing.Processors
         private const float Epsilon = 0.001f;
 
         private readonly IBrush brush;
-
-        private readonly TargetLayer sourceLayer;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="FillProcessor{TColor, TPacked}"/> class.
         /// </summary>
@@ -37,9 +35,8 @@ namespace ImageSharp.Drawing.Processors
         /// and apply it under the source image, else apply the <paramref name="brush"/> on top 
         /// of the source image
         /// </param>
-        public FillProcessor(IBrush brush, TargetLayer sourceLayer = TargetLayer.Background)
+        public FillProcessor(IBrush brush)
         {
-            this.sourceLayer = sourceLayer;
             this.brush = brush;
         }
 
@@ -65,9 +62,10 @@ namespace ImageSharp.Drawing.Processors
             {
                 startY = 0;
             }
-            
+            this.ParallelOptions.MaxDegreeOfParallelism = 1;
             // create a pixcel applicator (this will be important when there is a gradient or image brush)
             var applicator = brush.CreateApplicator(sourceRectangle);
+            var compositColors = applicator.RequiresComposition;
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
@@ -78,34 +76,35 @@ namespace ImageSharp.Drawing.Processors
                     y =>
                     {
                         int offsetY = y - startY;
+                        
+                        var colors = applicator.GetColor(minX, maxX-1, offsetY);
+
                         for (int x = minX; x < maxX; x++)
                         {
                             int offsetX = x - startX;
+                            int offsetColorX = x - minX;
 
-                            var color = applicator.GetColor(offsetX, offsetY).ToVector4();
-                            Vector4 backgroundColor = sourcePixels[offsetX, offsetY].ToVector4();
-
-                            //we want the brush color under the source image, flip the color order
-                            if (this.sourceLayer == TargetLayer.Foreground)
+                            var color = colors[offsetColorX].ToVector4();
+                            if (compositColors)
                             {
-                                var tmp = color;
-                                color = backgroundColor;
-                                backgroundColor = tmp;
-                            }
+                                Vector4 backgroundColor = sourcePixels[offsetX, offsetY].ToVector4();
 
-                            // based on the alpha of the foreground color shift the background color towards the forgound by the opactiy level
-                            // need to consider what opactiy should be like when doing this???
-                            // this logic seems to be working for now
-                            float a = color.W;
+                                // based on the alpha of the foreground color shift the background color towards the forgound by the opactiy level
+                                // need to consider what opactiy should be like when doing this???
+                                // this logic seems to be working for now
+                                float a = color.W;
 
-                            if (Math.Abs(a) < Epsilon)
-                            {
-                                color = backgroundColor;
-                            }
-                            else if (a < 1 && a > 0)
-                            {
-                                color.W = 1;
-                                color = Vector4.Lerp(backgroundColor, color, a);
+                                if (Math.Abs(a) < Epsilon)
+                                {
+                                    color = backgroundColor;
+                                    //no change skip
+                                    break;
+                                }
+                                else if (a < 1 && a > 0)
+                                {
+                                    color.W = 1;
+                                    color = Vector4.Lerp(backgroundColor, color, a);
+                                }
                             }
 
                             TColor packed = default(TColor);

@@ -32,6 +32,21 @@ namespace ImageSharp
         }
 
         /// <summary>
+        /// Flood fills the image with the specified color.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, Color color)
+            where TColor : struct, IPackedPixel<TPacked>
+            where TPacked : struct
+        {
+            return source.Process(new FillProcessor<TColor, TPacked>(new SolidBrush(color)));
+        }
+
+        /// <summary>
         /// Flood fills the image in the shape o fhte provided polygon with the specified brush..
         /// </summary>
         /// <typeparam name="TColor">The type of the color.</typeparam>

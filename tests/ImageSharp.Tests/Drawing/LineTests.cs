@@ -13,7 +13,7 @@ namespace ImageSharp.Tests.Drawing
     using System.Numerics;
     using Xunit;
 
-    public class PathTests : FileTestBase
+    public class LineTests : FileTestBase
     {
 
 
