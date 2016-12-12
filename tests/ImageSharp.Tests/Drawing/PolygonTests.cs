@@ -18,7 +18,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByPolygonOutline()
         {
-            string path = CreateOutputDirectory("Polygons");
+            string path = CreateOutputDirectory("Drawing", "Polygons");
             var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 150),
@@ -51,7 +51,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedPolygonOutlineWithOpacity()
         {
-            string path = CreateOutputDirectory("Polygons");
+            string path = CreateOutputDirectory("Drawing", "Polygons");
             var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 150),
@@ -88,7 +88,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByRectangleOutline()
         {
-            string path = CreateOutputDirectory("Polygons");
+            string path = CreateOutputDirectory("Drawing", "Polygons");
             var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 10),

@@ -19,7 +19,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByFilledPolygon()
         {
-            string path = CreateOutputDirectory("SolidBezier");
+            string path = CreateOutputDirectory("Drawing", "FilledBezier");
             var simplePath = new[] {
                         new PointF(10, 400),
                         new PointF(30, 10),
@@ -39,7 +39,7 @@ namespace ImageSharp.Tests.Drawing
             using (var sourcePixels = image.Lock())
             {
                 //top of curve
-                Assert.Equal(Color.HotPink, sourcePixels[138, 115]);
+                Assert.Equal(Color.HotPink, sourcePixels[138, 116]);
 
                 //start points                
                 Assert.Equal(Color.HotPink, sourcePixels[10, 400]);
@@ -57,7 +57,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByFilledPolygonOpacity()
         {
-            string path = CreateOutputDirectory("SolidBezier");
+            string path = CreateOutputDirectory("Drawing", "FilledBezier");
             var simplePath = new[] {
                         new PointF(10, 400),
                         new PointF(30, 10),
@@ -83,7 +83,7 @@ namespace ImageSharp.Tests.Drawing
             using (var sourcePixels = image.Lock())
             {
                 //top of curve
-                Assert.Equal(mergedColor, sourcePixels[138, 115]);
+                Assert.Equal(mergedColor, sourcePixels[138, 116]);
 
                 //start points                
                 Assert.Equal(mergedColor, sourcePixels[10, 400]);

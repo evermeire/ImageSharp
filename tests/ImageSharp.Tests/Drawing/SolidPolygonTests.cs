@@ -18,7 +18,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByFilledPolygon()
         {
-            string path = CreateOutputDirectory("SolidPolygons");
+            string path = CreateOutputDirectory("Drawing", "FilledPolygons");
             var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 150),
@@ -49,7 +49,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByFilledPolygonOpacity()
         {
-            string path = CreateOutputDirectory("SolidPolygons");
+            string path = CreateOutputDirectory("Drawing", "FilledPolygons");
             var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 150),
@@ -86,7 +86,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByFilledRectangle()
         {
-            string path = CreateOutputDirectory("SolidPolygons");
+            string path = CreateOutputDirectory("Drawing", "FilledPolygons");
             var simplePath = new[] {
                             new Point(10, 10),
                             new Point(200, 10),

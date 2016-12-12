@@ -20,7 +20,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByPath()
         {
-            string path = CreateOutputDirectory("Paths");
+            string path = CreateOutputDirectory("Drawing", "Lines");
             var image = new Image(500, 500);
 
             using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
@@ -50,7 +50,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedPathWithOpacity()
         {
-            string path = CreateOutputDirectory("Paths");
+            string path = CreateOutputDirectory("Drawing", "Lines");
 
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
             var brush = new SolidBrush(color);
@@ -87,7 +87,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByPathOutline()
         {
-            string path = CreateOutputDirectory("Paths");
+            string path = CreateOutputDirectory("Drawing", "Lines");
 
             var image = new Image(500, 500);
 

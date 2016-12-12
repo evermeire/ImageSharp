@@ -20,7 +20,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedByBezierLine()
         {
-            string path = CreateOutputDirectory("BezierLine");
+            string path = CreateOutputDirectory("Drawing","BezierLine");
             var image = new Image(500, 500);
 
             using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
@@ -59,7 +59,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeOverlayedBezierLineWithOpacity()
         {
-            string path = CreateOutputDirectory("BezierLine");
+            string path = CreateOutputDirectory("Drawing", "BezierLine");
 
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
             var brush = new SolidBrush(color);
