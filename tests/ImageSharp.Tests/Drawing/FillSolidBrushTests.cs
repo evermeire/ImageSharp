@@ -18,7 +18,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithColor()
         {
-            string path = CreateOutputDirectory("Drawing", "Fill", "SolidBrush");
+            string path = CreateOutputDirectory("Fill", "SolidBrush");
             var image = new Image(500, 500);
 
             using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
@@ -40,7 +40,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithColorOpacity()
         {
-            string path = CreateOutputDirectory("Drawing", "Fill", "SolidBrush");
+            string path = CreateOutputDirectory("Fill", "SolidBrush");
             var image = new Image(500, 500);
 
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
