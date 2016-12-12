@@ -14,7 +14,7 @@ namespace ImageSharp.Tests.Drawing
     using System.Numerics;
     using ImageSharp.Drawing.Polygons;
 
-    public class ComplexPolygonTests : FileTestBase
+    public class SolidComplexPolygonTests : FileTestBase
     {
         [Fact]
         public void ImageShouldBeOverlayedByPolygonOutline()
