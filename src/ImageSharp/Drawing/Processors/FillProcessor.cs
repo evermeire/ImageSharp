@@ -35,10 +35,12 @@ namespace ImageSharp.Drawing.Processors
         }
 
         /// <inheritdoc/>
-        protected override void Apply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
+        protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
             int startX = sourceRectangle.X;
             int endX = sourceRectangle.Right;
+            int startY = sourceRectangle.Y;
+            int endY = sourceRectangle.Bottom;
 
             // Align start/end positions.
             int minX = Math.Max(0, startX);

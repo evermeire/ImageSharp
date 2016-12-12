@@ -31,8 +31,7 @@ namespace ImageSharp.Drawing.Processors
 
         protected abstract int DrawPadding { get; }
 
-        /// <inheritdoc/>
-        protected override void Apply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle, int startY, int endY)
+        protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
             var rect = RectangleF.Ceiling(poly.Bounds); //rounds the points out away from the center
 
@@ -40,12 +39,17 @@ namespace ImageSharp.Drawing.Processors
             int polyEndY = rect.Bottom + DrawPadding;
             int startX = rect.X - DrawPadding;
             int endX = rect.Right + DrawPadding;
+            
+            int minX = Math.Max(sourceRectangle.Left, startX);
+            int maxX = Math.Min(sourceRectangle.Right, endX);
+            int minY = Math.Max(sourceRectangle.Top, polyStartY);
+            int maxY = Math.Min(sourceRectangle.Bottom, polyEndY);
 
             // Align start/end positions.
-            int minX = Math.Max(0, startX);
-            int maxX = Math.Min(source.Width, endX);
-            int minY = Math.Max(0, polyStartY);
-            int maxY = Math.Min(source.Height, polyEndY);
+            minX = Math.Max(0, minX);
+            maxX = Math.Min(source.Width, maxX);
+            minY = Math.Max(0, minY);
+            maxY = Math.Min(source.Height, maxY);
 
             // Reset offset if necessary.
             if (minX > 0)
