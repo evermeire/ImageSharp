@@ -23,13 +23,13 @@ namespace ImageSharp.Drawing.Processors
     {
         private const float Epsilon = 0.001f;
 
-        private readonly IBrush<TColor, TPacked> brush;
+        private readonly IBrush brush;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="FillProcessor{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="brush">The brush to source pixel colors from.</param>      
-        public FillProcessor(IBrush<TColor, TPacked> brush)
+        public FillProcessor(IBrush brush)
         {
             this.brush = brush;
         }
@@ -60,7 +60,10 @@ namespace ImageSharp.Drawing.Processors
             }
             this.ParallelOptions.MaxDegreeOfParallelism = 1;
             // create a pixcel applicator (this will be important when there is a gradient or image brush)
-            var applicator = brush.CreateApplicator(sourceRectangle);
+            // should probably be disposable if we want an image brush so we can dispose of the underlying 
+            // PixelAccessor<TColor, TPacked> that it would need, wonder if its woth doing now to prevent 
+            // api breaks later.
+            var applicator = brush.CreateApplicator<TColor, TPacked>(sourceRectangle);
             var compositColors = applicator.RequiresComposition;
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
@@ -80,32 +83,36 @@ namespace ImageSharp.Drawing.Processors
                             int offsetX = x - startX;
                             int offsetColorX = x - minX;
 
-                            var color = colors[offsetColorX].ToVector4();
+                            var packed = colors[offsetColorX];
                             if (compositColors)
                             {
-                                Vector4 backgroundColor = sourcePixels[offsetX, offsetY].ToVector4();
-
+                                var color = packed.ToVector4();
                                 // based on the alpha of the foreground color shift the background color towards the forgound by the opactiy level
                                 // need to consider what opactiy should be like when doing this???
                                 // this logic seems to be working for now
                                 float a = color.W;
+                                if (a != 1)
+                                {
+                                    TColor background = sourcePixels[offsetX, offsetY];
 
-                                if (Math.Abs(a) < Epsilon)
-                                {
-                                    color = backgroundColor;
-                                    //no change skip
-                                    break;
-                                }
-                                else if (a < 1 && a > 0)
-                                {
-                                    color.W = 1;
-                                    color = Vector4.Lerp(backgroundColor, color, a);
+                                    if (Math.Abs(a) > Epsilon && a < 1 )
+                                    {
+                                        Vector4 backgroundColor = background.ToVector4();
+                                        
+                                        color = Vector4.Lerp(backgroundColor, new Vector4(color.X, color.Y, color.Z, 1), a);
+
+                                        packed = default(TColor);
+                                        packed.PackFromVector4(color);
+                                    }
+                                    else
+                                    {
+                                        packed = background;
+                                    }
                                 }
                             }
 
-                            TColor packed = default(TColor);
-                            packed.PackFromVector4(color);
                             sourcePixels[offsetX, offsetY] = packed;
+
                         }
                     });
             }

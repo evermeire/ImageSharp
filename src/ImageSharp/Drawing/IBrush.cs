@@ -7,7 +7,7 @@ namespace ImageSharp.Drawing
 {
     using Processing;
     using System;
-
+    
     /// <summary>
     /// interface representing a brush
     /// </summary>
@@ -15,9 +15,7 @@ namespace ImageSharp.Drawing
     /// A brush is a simple interface that will return an <see cref="IBrushApplicator"/> that will perform the
     /// logic for converting a pixel location to a <see cref="Color"/>.
     /// </remarks>
-    public interface IBrush<TColor, TPacked>
-        where TColor : struct, IPackedPixel<TPacked>
-        where TPacked : struct
+    public interface IBrush
     {
         /// <summary>
         /// Creates the applicator for this bursh.
@@ -28,6 +26,8 @@ namespace ImageSharp.Drawing
         /// The <paramref name="region"/> when being applied to things like shapes would ussually be the 
         /// bounding box of the shape not necorserrally the shape of the whole image 
         /// </remarks>
-        IBrushApplicator<TColor, TPacked> CreateApplicator(RectangleF region);
+        IBrushApplicator<TColor, TPacked> CreateApplicator<TColor, TPacked>(RectangleF region)
+            where TColor : struct, IPackedPixel<TPacked>
+            where TPacked : struct;
     }
 }

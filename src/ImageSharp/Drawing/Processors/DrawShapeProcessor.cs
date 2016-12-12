@@ -14,7 +14,7 @@ namespace ImageSharp.Drawing.Processors
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
-        public DrawShapeProcessor(IPen<TColor, TPacked> pen, IShape shape) : base(pen.Brush, shape)
+        public DrawShapeProcessor(IPen pen, IShape shape) : base(pen.Brush, shape)
         {
             halfThickness = pen.Width / 2;
             drawPadding = (int)Math.Ceiling(halfThickness + antialiasFactor);

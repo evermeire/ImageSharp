@@ -17,7 +17,7 @@ namespace ImageSharp.Drawing.Processors
         const float antialiasFactor = 1f;
         private readonly int drawPadding;
 
-        public FillShapeProcessor(IBrush<TColor, TPacked> brush, IShape shape) : base(brush, shape)
+        public FillShapeProcessor(IBrush brush, IShape shape) : base(brush, shape)
         {
             drawPadding = (int)Math.Ceiling(antialiasFactor);
         }

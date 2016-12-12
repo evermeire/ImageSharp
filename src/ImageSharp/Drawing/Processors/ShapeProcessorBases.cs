@@ -17,10 +17,10 @@ namespace ImageSharp.Drawing.Processors
     {
         private const float Epsilon = 0.001f;
 
-        private readonly IBrush<TColor, TPacked> fillColor;
+        private readonly IBrush fillColor;
         private readonly IShape poly;
 
-        public ShapeProcessorBase(IBrush<TColor, TPacked> brush, IShape shape)
+        public ShapeProcessorBase(IBrush brush, IShape shape)
         {
             this.poly = shape;
             this.fillColor = brush;
@@ -63,7 +63,9 @@ namespace ImageSharp.Drawing.Processors
             }
 
             //calculate 
-            var applicator = fillColor.CreateApplicator(rect);
+            var applicator = fillColor.CreateApplicator<TColor, TPacked>(rect);
+            var compose = applicator.RequiresComposition;
+
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
                 Parallel.For(
@@ -76,31 +78,43 @@ namespace ImageSharp.Drawing.Processors
                     for (int x = minX; x < maxX; x++)
                     {
                         int offsetX = x - startX;
-                        
+
                         var dist = poly.Distance(offsetX, offsetY);
                         var opacity = Opacity(dist);
-
-                        if (opacity > 0)
+                        if (opacity == 1  //we are not anti-aliasing
+                            && !compose) //and the brush says don't composite
                         {
-                            var color = applicator.GetColor(offsetX, offsetY).ToVector4();                            
+                            //set the pixel directly
+                            sourcePixels[offsetX, offsetY] = applicator.GetColor(offsetX, offsetY);
+                        }
+                        else if (opacity > 0)
+                        {
+                            var packed = applicator.GetColor(offsetX, offsetY);
 
-                            Vector4 backgroundColor = sourcePixels[offsetX, offsetY].ToVector4();
-
+                            var color = packed.ToVector4();
                             float a = color.W * opacity;
-
-                            if (Math.Abs(a) < Epsilon)
+                            if (a > Epsilon)
                             {
-                                color = backgroundColor;
-                            }
-                            else if (a < 1 && a > 0)
-                            {
-                                color.W = 1;
-                                color = Vector4.Lerp(backgroundColor, color, a);
-                            }
+                                if (a != 1)
+                                {
+                                    TColor background = sourcePixels[offsetX, offsetY];
 
-                            TColor packed = default(TColor);
-                            packed.PackFromVector4(color);
-                            sourcePixels[offsetX, offsetY] = packed;
+                                    if (Math.Abs(a) > Epsilon && a < 1)
+                                    {
+                                        Vector4 backgroundColor = background.ToVector4();
+
+                                        color = Vector4.Lerp(backgroundColor, new Vector4(color.X, color.Y, color.Z, 1), a);
+
+                                        packed = default(TColor);
+                                        packed.PackFromVector4(color);
+                                    }
+                                    else
+                                    {
+                                        packed = background;
+                                    }
+                                }
+                                sourcePixels[offsetX, offsetY] = packed;
+                            }
                         }
                     }
                 });

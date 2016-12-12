@@ -1,24 +1,22 @@
 ﻿namespace ImageSharp.Drawing
 {
 
-    public class Pen<TColor, TPacked> : IPen<TColor, TPacked>
-        where TColor : struct, IPackedPixel<TPacked>
-        where TPacked : struct
+    public class Pen : IPen
     {
 
-        public Pen(TColor color, float width)
-            :this(new SolidBrush<TColor, TPacked>(color), width)
+        public Pen(Color color, float width)
+            :this(new SolidBrush(color), width)
         {
 
         }
 
-        public Pen(IBrush<TColor, TPacked> brush, float width)
+        public Pen(IBrush brush, float width)
         {
             this.Brush = brush;
             this.Width = width;
         }
 
-        public IBrush<TColor, TPacked> Brush { get; }
+        public IBrush Brush { get; }
 
         public float Width { get; }
         
