@@ -32,7 +32,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .Fill(Brushes.HotPink,new BezierPolygon(simplePath))
+                    .Fill(Color.HotPink,new BezierPolygon(simplePath))
                     .Save(output);
             }
 

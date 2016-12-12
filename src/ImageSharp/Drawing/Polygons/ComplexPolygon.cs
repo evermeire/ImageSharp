@@ -6,31 +6,31 @@ using System.Threading.Tasks;
 
 namespace ImageSharp.Drawing.Polygons
 {
-    internal class ComplexPolygon : IShape
+    public sealed class ComplexPolygon : IShape
     {
-        private readonly IEnumerable<Polygon> simplePolygons;
-        private IEnumerable<Polygon> holes;
-        private IEnumerable<Polygon> outlines;
+        private IEnumerable<IShape> holes;
+        private IEnumerable<IShape> outlines;
 
-        public ComplexPolygon(IEnumerable<ILineSegment> segments) 
-            :this(new Polygon(segments), null)
-        { }
+        public ComplexPolygon(IShape outline, params IShape[] holes)
+            : this(outline, (IEnumerable<IShape>)holes)
+        {
+        }
 
-        public ComplexPolygon(Polygon outline, IEnumerable<Polygon> holes)
+        public ComplexPolygon(IShape outline, IEnumerable<IShape> holes)
         {
             Guard.NotNull(outline, nameof(outline));
 
             this.outlines = new[] { outline };
-            this.holes = holes ?? Enumerable.Empty<Polygon>();
+            this.holes = holes ?? Enumerable.Empty<IShape>();
 
             var minX = outlines.Min(x => x.Bounds.Left);
             var maxX = outlines.Max(x => x.Bounds.Right);
             var minY = outlines.Min(x => x.Bounds.Top);
             var maxY = outlines.Max(x => x.Bounds.Bottom);
 
-            Bounds = new RectangleF(minX, minY, maxX - minX, maxY - maxY);
+            Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
-        
+
         private void FixPolygons()
         {
             // TODO iterate over all the polygons and fix any overlapping verticies 
@@ -39,18 +39,18 @@ namespace ImageSharp.Drawing.Polygons
 
         public RectangleF Bounds { get; }
 
-        public float Distance(Vector2 point)
+        float IShape.Distance(int x, int y)
         {
             // get the outline we are closest to the center of
             // by rights we should only be inside 1 outline
             // othersie we will start returning the distanct to the nearest shape
-            var dist = outlines.Select(o=>o.Distance(point)).OrderBy(x=>x).First();
+            var dist = outlines.Select(o => o.Distance(x, y)).OrderBy(p => p).First();
 
-            if (dist == 0)
+            if (dist < 0)//inside poly
             {
                 foreach (var hole in holes)
                 {
-                    var distFromHole = hole.Distance(point);
+                    var distFromHole = hole.Distance(x, y);
 
                     //less than zero we are inside shape
                     if (distFromHole <= 0)
@@ -63,11 +63,6 @@ namespace ImageSharp.Drawing.Polygons
             }
 
             return dist;
-        }
-
-        float IShape.Distance(int x, int y)
-        {
-            return this.Distance(new Vector2( x, y));
         }
     }
 }

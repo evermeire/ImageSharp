@@ -25,15 +25,19 @@ namespace ImageSharp.Tests.Drawing
                             new Point(50, 300)
             };
 
-            var image = new Image(500, 500);
+var image = new Image(500, 500);
 
-            using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
-            {
-                image
-                    .BackgroundColor(Color.Blue)
-                    .DrawPolygon(Brushes.HotPink, 5, simplePath)
-                    .Save(output);
-            }
+using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
+{
+    image
+        .BackgroundColor(Color.Blue)
+        .DrawPolygon(Color.HotPink, 5, new[] {
+                new Point(10, 10),
+                new Point(200, 150),
+                new Point(50, 300)
+        })
+        .Save(output);
+}
 
             using (var sourcePixels = image.Lock())
             {
@@ -96,15 +100,20 @@ namespace ImageSharp.Tests.Drawing
                             new Point(10, 150)
                             };
 
-            var image = new Image(500, 500);
+var image = new Image(500, 500);
 
-            using (FileStream output = File.OpenWrite($"{path}/Rectangle.png"))
-            {
-                image
-                    .BackgroundColor(Color.Blue)
-                    .DrawPolygon(Brushes.HotPink, 10, simplePath)
-                    .Save(output);
-            }
+using (FileStream output = File.OpenWrite($"{path}/Rectangle.png"))
+{
+    image
+        .BackgroundColor(Color.Blue)
+        .DrawPolygon(Color.HotPink, 10, new[] {
+                new Point(10, 10),
+                new Point(200, 10),
+                new Point(200, 150),
+                new Point(10, 150)
+                })
+        .Save(output);
+}
 
             using (var sourcePixels = image.Lock())
             {

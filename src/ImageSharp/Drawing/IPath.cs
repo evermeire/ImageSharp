@@ -16,6 +16,6 @@ namespace ImageSharp.Drawing
         /// </summary>
         /// <param name="point">The point</param>
         /// <returns></returns>
-        float Distance(int x, int y);
+        float Distance(int x, int y);        
     }
 }

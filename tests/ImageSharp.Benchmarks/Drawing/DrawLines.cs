@@ -10,7 +10,6 @@ namespace ImageSharp.Benchmarks
 
     using BenchmarkDotNet.Attributes;
     using CoreImage = ImageSharp.Image;
-    using CoreBrushes = ImageSharp.Drawing.Brushes;
     using CorePoint = ImageSharp.Point;
     using CorePointF= ImageSharp.PointF;
     using CoreColor= ImageSharp.Color;

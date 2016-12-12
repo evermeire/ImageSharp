@@ -73,7 +73,7 @@ namespace ImageSharp.Drawing.Processors
                     for (int x = minX; x < maxX; x++)
                     {
                         int offsetX = x - startX;
-
+                        
                         var dist = poly.Distance(offsetX, offsetY);
                         var opacity = Opacity(dist);
 

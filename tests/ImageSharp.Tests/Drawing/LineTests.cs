@@ -27,7 +27,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(Brushes.HotPink, 5, new[] {
+                    .DrawLines(Color.HotPink, 5, new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)
@@ -95,7 +95,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(Brushes.HotPink, 10, new[] {
+                    .DrawLines(Color.HotPink, 10, new[] {
                             new Point(10, 10),
                             new Point(200, 10),
                             new Point(200, 150),

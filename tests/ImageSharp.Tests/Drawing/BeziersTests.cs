@@ -21,20 +21,20 @@ namespace ImageSharp.Tests.Drawing
         public void ImageShouldBeOverlayedByBezierLine()
         {
             string path = CreateOutputDirectory("Drawing","BezierLine");
-            var image = new Image(500, 500);
+var image = new Image(500, 500);
 
-            using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
-            {
-                image
-                    .BackgroundColor(Color.Blue)
-                    .DrawBeziers(Brushes.HotPink, 5, new[] {
-                        new PointF(10, 400),
-                        new PointF(30, 10),
-                        new PointF(240, 30),
-                        new PointF(300, 400)
-                    })
-                    .Save(output);
-            }
+using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
+{
+    image
+        .BackgroundColor(Color.Blue)
+        .DrawBeziers(Color.HotPink, 5, new[] {
+            new PointF(10, 400),
+            new PointF(30, 10),
+            new PointF(240, 30),
+            new PointF(300, 400)
+        })
+        .Save(output);
+}
 
             using (var sourcePixels = image.Lock())
             {

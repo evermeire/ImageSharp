@@ -10,8 +10,8 @@ namespace ImageSharp.Benchmarks
 
     using BenchmarkDotNet.Attributes;
     using CoreImage = ImageSharp.Image;
-    using CoreBrushes = ImageSharp.Drawing.Brushes;
     using CorePoint = ImageSharp.Point;
+    using CoreColor = ImageSharp.Color;
     using System.IO;
 
     public class FillPolygon
@@ -42,7 +42,7 @@ namespace ImageSharp.Benchmarks
         public void DrawSolidPolygonCore()
         {
             CoreImage image = new CoreImage(800, 800);
-            image.FillPolygon(CoreBrushes.HotPink,
+            image.FillPolygon(CoreColor.HotPink,
                  new[] {
                      new CorePoint(10, 10),
                      new CorePoint(550, 50),

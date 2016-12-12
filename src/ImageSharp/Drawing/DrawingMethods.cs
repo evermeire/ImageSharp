@@ -50,6 +50,23 @@ namespace ImageSharp
         }
 
         /// <summary>
+        /// Draws the outline of the polygon with the provided brush at the provided thickness.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="shape">The shape.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, IShape shape)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPolygon(new SolidBrush(color), thickness, shape);
+        }
+
+        /// <summary>
         /// Draws the provided Points as a closed Linear Polygon with the provided brush at the provided thickness.
         /// </summary>
         /// <typeparam name="TColor">The type of the color.</typeparam>
@@ -64,6 +81,23 @@ namespace ImageSharp
            where TPacked : struct
         {
             return source.DrawPolygon(new Pen(brush, thickness), new Polygon(new LinearLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the provided Points as a closed Linear Polygon with the provided brush at the provided thickness.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, PointF[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPolygon(new SolidBrush(color), thickness, points);
         }
 
         /// <summary>
@@ -96,6 +130,23 @@ namespace ImageSharp
            where TPacked : struct
         {
             return source.DrawPolygon(new Pen(brush, thickness), new Polygon(new LinearLineSegment(points)));
+        }
+
+
+        /// <summary>
+        /// Draws the provided Points as a closed Linear Polygon with the provided brush at the provided thickness.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, Point[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPolygon(new SolidBrush(color), thickness, points);
         }
 
         /// <summary>
@@ -147,6 +198,23 @@ namespace ImageSharp
         }
 
         /// <summary>
+        /// Draws the path with the bursh at the privdied thickness.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, IPath path)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawPath(new SolidBrush(color), thickness, path);
+        }
+
+        /// <summary>
         /// Draws the provided Points as an open Linear path at the provided thickness with the supplied brush
         /// </summary>
         /// <typeparam name="TColor">The type of the color.</typeparam>
@@ -161,6 +229,23 @@ namespace ImageSharp
            where TPacked : struct
         {
             return source.DrawPath(new Pen(brush, thickness), new Path(new LinearLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the provided Points as an open Linear path at the provided thickness with the supplied brush
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, PointF[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawLines(new SolidBrush(color), thickness, points);
         }
 
         /// <summary>
@@ -194,6 +279,23 @@ namespace ImageSharp
            where TPacked : struct
         {
             return source.DrawPath(new Pen(brush, thickness), new Path(new LinearLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the provided Points as an open Linear path at the provided thickness with the supplied brush
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, Point[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawLines(new SolidBrush(color), thickness,points);
         }
 
         /// <summary>
@@ -237,6 +339,23 @@ namespace ImageSharp
         }
 
         /// <summary>
+        /// Draws the provided Points as an open Bezier path at the provided thickness with the supplied brush
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, PointF[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawBeziers(new SolidBrush(color), thickness, points);
+        }
+
+        /// <summary>
         /// Draws the provided Points as an open Bezier path with the supplied pen
         /// </summary>
         /// <typeparam name="TColor">The type of the color.</typeparam>
@@ -267,6 +386,23 @@ namespace ImageSharp
            where TPacked : struct
         {
             return source.DrawPath(new Pen(brush, thickness), new Path(new BezierLineSegment(points)));
+        }
+
+        /// <summary>
+        /// Draws the provided Points as an open Bezier path at the provided thickness with the supplied brush
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="brush">The brush.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="points">The points.</param>
+        /// <returns></returns>
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, Point[] points)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            return source.DrawBeziers(new SolidBrush(color), thickness, points);
         }
 
         /// <summary>
