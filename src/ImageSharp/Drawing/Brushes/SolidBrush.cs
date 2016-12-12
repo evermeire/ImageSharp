@@ -11,36 +11,53 @@ namespace ImageSharp.Drawing
     using System.Numerics;
     using System.Threading.Tasks;
 
+    public static class SolidBrush
+    {
+        public static SolidBrush<TColor, TPacked> FromColor<TColor, TPacked>(TColor color)
+        where TColor : struct, IPackedPixel<TPacked>
+        where TPacked : struct
+        {
+            return new SolidBrush<TColor, TPacked>(color);
+        }
+    }
+
     /// <summary>
     /// A brush representing a Solid color fill
     /// </summary>
     /// <seealso cref="ImageSharp.Brushs.IBrush" />
-    public class SolidBrush: IBrush
+    public class SolidBrush<TColor, TPacked> : IBrush<TColor, TPacked>
+        where TColor : struct, IPackedPixel<TPacked>
+        where TPacked : struct
     {
-        private readonly Color color;
+
+
+        private readonly TColor color;
         /// <summary>
         /// Initializes a new instance of the <see cref="SolidBrush"/> class.
         /// </summary>
         /// <param name="color">The color.</param>
-        public SolidBrush(Color color)
+        public SolidBrush(TColor color)
         {
             this.color = color;
         }
 
-        public class SolidBrushApplicator : BrushApplicatorBase
+        public class SolidBrushApplicator<TColor, TPacked> : BrushApplicatorBase<TColor, TPacked>
+        where TColor : struct, IPackedPixel<TPacked>
+        where TPacked : struct
         {
 
-            private Color color;
+            private TColor color;
             private bool hasOpacitySet = false;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="SolidBrushApplicator{TColor, TPacked}"/> class.
             /// </summary>
             /// <param name="color">The color.</param>
-            public SolidBrushApplicator(Color color)
+            public SolidBrushApplicator(TColor color)
             {
                 this.color = color;
-                hasOpacitySet = this.color.A != 255;
+
+                hasOpacitySet = this.color.ToVector4().W != 1;
             }
             
             public override bool RequiresComposition
@@ -51,9 +68,9 @@ namespace ImageSharp.Drawing
                 }
             }
 
-            public virtual Color[] GetColor(int startX, int endX, int Y)
+            public virtual TColor[] GetColor(int startX, int endX, int Y)
             {
-                var result = new Color[endX - startX + 1];
+                var result = new TColor[endX - startX + 1];
                 for (var x = startX; x <= endX; x++)
                 {
                     result[x - startX] = color;
@@ -61,11 +78,11 @@ namespace ImageSharp.Drawing
                 return result;
             }
 
-            public override Color[,] GetColor(int startX, int startY, int endX, int endY)
+            public override TColor[,] GetColor(int startX, int startY, int endX, int endY)
             {
                 var maxX = endX - startX;
                 var maxY = endY - startY;
-                var colors = new Color[maxX+1, maxY+1];
+                var colors = new TColor[maxX+1, maxY+1];
                 for (var x = 0; x <= maxX; x++)
                 {
                     for (var y = 0; y <= maxY; y++)
@@ -77,15 +94,15 @@ namespace ImageSharp.Drawing
                 return colors;
             }
 
-            public override Color GetColor(int x, int y)
+            public override TColor GetColor(int x, int y)
             {
                 return color;
             }
         }
 
-        public IBrushApplicator CreateApplicator(RectangleF region)
+        public IBrushApplicator<TColor, TPacked> CreateApplicator(RectangleF region)
         {
-            return new SolidBrushApplicator(color);
+            return new SolidBrushApplicator<TColor, TPacked>(color);
         }
     }
 }

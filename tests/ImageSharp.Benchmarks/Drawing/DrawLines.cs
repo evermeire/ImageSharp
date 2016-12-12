@@ -13,7 +13,6 @@ namespace ImageSharp.Benchmarks
     using CorePoint = ImageSharp.Point;
     using CorePointF= ImageSharp.PointF;
     using CoreColor= ImageSharp.Color;
-    using CorePen = ImageSharp.Drawing.Pen;
     using System.IO;
     
     public class DrawLines
@@ -48,9 +47,7 @@ namespace ImageSharp.Benchmarks
         {
             CoreImage image = new CoreImage(800, 800);
 
-            var pen = new CorePen(CoreColor.HotPink, 10);
-
-            image.DrawLines(pen, new[] {
+            image.DrawLines(CoreColor.HotPink, 10, new[] {
                      new CorePointF(10, 10),
                      new CorePointF(550, 50),
                      new CorePointF(200, 400)

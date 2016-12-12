@@ -10,7 +10,9 @@ namespace ImageSharp.Drawing.Processing
     /// <summary>
     /// interface preresenting a brush
     /// </summary>
-    public interface IBrushApplicator
+    public interface IBrushApplicator<TColor, TPacked>
+        where TColor : struct, IPackedPixel<TPacked>
+        where TPacked : struct
     {
         /// <summary>
         /// Gets a value indicating whether the brush will return colors that may 
@@ -32,7 +34,7 @@ namespace ImageSharp.Drawing.Processing
         /// <param name="endX">The end x.</param>
         /// <param name="endY">The end y.</param>
         /// <returns></returns>
-        Color[,] GetColor(int startX, int startY, int endX, int endY);
+        TColor[,] GetColor(int startX, int startY, int endX, int endY);
 
         /// <summary>
         /// Gets the colors for a block of pixels.
@@ -41,7 +43,7 @@ namespace ImageSharp.Drawing.Processing
         /// <param name="endX">The end x.</param>
         /// <param name="Y">The Y coordinate to get the line of colors for.</param>
         /// <returns></returns>
-        Color[] GetColor(int startX, int endX, int Y);
+        TColor[] GetColor(int startX, int endX, int Y);
 
         /// <summary>
         /// Gets the color for a single pixel.
@@ -49,6 +51,6 @@ namespace ImageSharp.Drawing.Processing
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <returns></returns>
-        Color GetColor(int x, int y);
+        TColor GetColor(int x, int y);
     }
 }

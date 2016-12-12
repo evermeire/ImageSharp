@@ -17,11 +17,10 @@ namespace ImageSharp.Drawing.Processors
     {
         private const float Epsilon = 0.001f;
 
-        private readonly IBrush fillColor;
+        private readonly IBrush<TColor, TPacked> fillColor;
         private readonly IShape poly;
-        private readonly TargetLayer layer;
 
-        public ShapeProcessorBase(IBrush brush, IShape shape)
+        public ShapeProcessorBase(IBrush<TColor, TPacked> brush, IShape shape)
         {
             this.poly = shape;
             this.fillColor = brush;
@@ -79,7 +78,7 @@ namespace ImageSharp.Drawing.Processors
 
                         if (opacity > 0)
                         {
-                            var color = applicator.GetColor(offsetX, offsetY).ToVector4();
+                            var color = applicator.GetColor(offsetX, offsetY).ToVector4();                            
 
                             Vector4 backgroundColor = sourcePixels[offsetX, offsetY].ToVector4();
 

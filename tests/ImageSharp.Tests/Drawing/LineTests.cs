@@ -53,8 +53,6 @@ namespace ImageSharp.Tests.Drawing
             string path = CreateOutputDirectory("Drawing", "Lines");
 
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
-            var brush = new SolidBrush(color);
-
 
             var image = new Image(500, 500);
             
@@ -63,7 +61,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(brush, 10, new[] {
+                    .DrawLines(color, 10, new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)

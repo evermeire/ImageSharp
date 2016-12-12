@@ -62,8 +62,6 @@ using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
             string path = CreateOutputDirectory("Drawing", "BezierLine");
 
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
-            var brush = new SolidBrush(color);
-
 
             var image = new Image(500, 500);
             
@@ -71,7 +69,7 @@ using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawBeziers(brush, 10, new[] {
+                    .DrawBeziers(color, 10, new[] {
                         new PointF(10, 400),
                         new PointF(30, 10),
                         new PointF(240, 30),

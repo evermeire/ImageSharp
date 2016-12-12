@@ -25,7 +25,7 @@ namespace ImageSharp
         /// <param name="pen">The pen.</param>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, IShape shape)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, IShape shape)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -42,11 +42,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, IShape shape)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, IShape shape)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPolygon(new Pen(brush, thickness), shape);
+            return source.DrawPolygon(new Pen<TColor, TPacked>(brush, thickness), shape);
         }
 
         /// <summary>
@@ -59,11 +59,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, IShape shape)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, IShape shape)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPolygon(new SolidBrush(color), thickness, shape);
+            return source.DrawPolygon(new SolidBrush<TColor, TPacked>(color), thickness, shape);
         }
 
         /// <summary>
@@ -76,11 +76,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, PointF[] points)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPolygon(new Pen(brush, thickness), new Polygon(new LinearLineSegment(points)));
+            return source.DrawPolygon(new Pen<TColor, TPacked>(brush, thickness), new Polygon(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -93,11 +93,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, PointF[] points)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPolygon(new SolidBrush(color), thickness, points);
+            return source.DrawPolygon(new SolidBrush<TColor, TPacked>(color), thickness, points);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace ImageSharp
         /// <param name="brush">The brush.</param>
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, PointF[] points)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -125,11 +125,11 @@ namespace ImageSharp
         /// <param name="brush">The brush.</param>
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, Point[] points)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPolygon(new Pen(brush, thickness), new Polygon(new LinearLineSegment(points)));
+            return source.DrawPolygon(new Pen<TColor, TPacked>(brush, thickness), new Polygon(new LinearLineSegment(points)));
         }
 
 
@@ -142,11 +142,11 @@ namespace ImageSharp
         /// <param name="color">The color.</param>
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, Point[] points)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPolygon(new SolidBrush(color), thickness, points);
+            return source.DrawPolygon(new SolidBrush<TColor, TPacked>(color), thickness, points);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace ImageSharp
         /// <param name="source">The source.</param>
         /// <param name="pen">The pen.</param>
         /// <param name="points">The points.</param>
-        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, Point[] points)
+        public static Image<TColor, TPacked> DrawPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -173,7 +173,7 @@ namespace ImageSharp
         /// <param name="pen">The pen.</param>
         /// <param name="path">The path.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, IPath path)
+        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, IPath path)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -190,11 +190,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="path">The path.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, IPath path)
+        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, IPath path)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPath(new Pen(brush, thickness), path);
+            return source.DrawPath(new Pen<TColor, TPacked>(brush, thickness), path);
         }
 
         /// <summary>
@@ -207,11 +207,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="path">The path.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, IPath path)
+        public static Image<TColor, TPacked> DrawPath<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, IPath path)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPath(new SolidBrush(color), thickness, path);
+            return source.DrawPath(new SolidBrush<TColor, TPacked>(color), thickness, path);
         }
 
         /// <summary>
@@ -224,11 +224,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, PointF[] points)
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPath(new Pen(brush, thickness), new Path(new LinearLineSegment(points)));
+            return source.DrawPath(new Pen<TColor, TPacked>(brush, thickness), new Path(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -241,11 +241,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, PointF[] points)
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawLines(new SolidBrush(color), thickness, points);
+            return source.DrawLines(new SolidBrush<TColor, TPacked>(color), thickness, points);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace ImageSharp
         /// <param name="pen">The pen.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, PointF[] points)
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -274,11 +274,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, Point[] points)
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPath(new Pen(brush, thickness), new Path(new LinearLineSegment(points)));
+            return source.DrawPath(new Pen<TColor, TPacked>(brush, thickness), new Path(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -291,11 +291,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, Point[] points)
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawLines(new SolidBrush(color), thickness,points);
+            return source.DrawLines(new SolidBrush<TColor, TPacked>(color), thickness,points);
         }
 
         /// <summary>
@@ -307,7 +307,7 @@ namespace ImageSharp
         /// <param name="pen">The pen.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, Point[] points)
+        public static Image<TColor, TPacked> DrawLines<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -331,11 +331,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, PointF[] points)
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPath(new Pen(brush, thickness), new Path(new BezierLineSegment(points)));
+            return source.DrawPath(new Pen<TColor, TPacked>(brush, thickness), new Path(new BezierLineSegment(points)));
         }
 
         /// <summary>
@@ -348,11 +348,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, PointF[] points)
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawBeziers(new SolidBrush(color), thickness, points);
+            return source.DrawBeziers(new SolidBrush<TColor, TPacked>(color), thickness, points);
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace ImageSharp
         /// <param name="pen">The pen.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, PointF[] points)
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -381,11 +381,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, float thickness, Point[] points)
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, float thickness, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawPath(new Pen(brush, thickness), new Path(new BezierLineSegment(points)));
+            return source.DrawPath(new Pen<TColor, TPacked>(brush, thickness), new Path(new BezierLineSegment(points)));
         }
 
         /// <summary>
@@ -398,11 +398,11 @@ namespace ImageSharp
         /// <param name="thickness">The thickness.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, float thickness, Point[] points)
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, float thickness, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.DrawBeziers(new SolidBrush(color), thickness, points);
+            return source.DrawBeziers(new SolidBrush<TColor, TPacked>(color), thickness, points);
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace ImageSharp
         /// <param name="pen">The pen.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IPen pen, Point[] points)
+        public static Image<TColor, TPacked> DrawBeziers<TColor, TPacked>(this Image<TColor, TPacked> source, IPen<TColor, TPacked> pen, Point[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {

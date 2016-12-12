@@ -63,7 +63,6 @@ using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
             string path = CreateOutputDirectory("Drawing", "Path");
 
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
-            var brush = new SolidBrush(color);
 
 
             var linerSegemnt = new LinearLineSegment(
@@ -85,7 +84,7 @@ using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawPath(brush, 10, p)
+                    .DrawPath(color, 10, p)
                     .Save(output);
             }
 

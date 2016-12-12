@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace ImageSharp.Drawing.Processing
 {
-    public abstract class BrushApplicatorBase : IBrushApplicator
+    public abstract class BrushApplicatorBase<TColor, TPacked> : IBrushApplicator<TColor, TPacked>
+        where TColor : struct, IPackedPixel<TPacked>
+        where TPacked : struct
     {
         public virtual bool RequiresComposition
         {
@@ -15,11 +17,11 @@ namespace ImageSharp.Drawing.Processing
             }
         }
 
-        public abstract Color GetColor(int x, int y);
+        public abstract TColor GetColor(int x, int y);
 
-        public virtual Color[] GetColor(int startX, int endX, int Y)
+        public virtual TColor[] GetColor(int startX, int endX, int Y)
         {
-            var result = new Color[endX - startX + 1];
+            var result = new TColor[endX - startX + 1];
             for(var x = startX; x<=endX; x++)
             {
                 result[x - startX] = GetColor(x, Y);
@@ -27,11 +29,11 @@ namespace ImageSharp.Drawing.Processing
             return result;
         }
 
-        public virtual Color[,] GetColor(int startX, int startY, int endX, int endY)
+        public virtual TColor[,] GetColor(int startX, int startY, int endX, int endY)
         {
             var maxX = endX - startX;
             var maxY = endY - startY;
-            var colors = new Color[maxX + 1, maxY + 1];
+            var colors = new TColor[maxX + 1, maxY + 1];
             for (var x = 0; x <= maxX; x++)
             {
                 for (var y = 0; y <= maxY; y++)

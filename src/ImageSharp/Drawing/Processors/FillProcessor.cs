@@ -23,19 +23,13 @@ namespace ImageSharp.Drawing.Processors
     {
         private const float Epsilon = 0.001f;
 
-        private readonly IBrush brush;
+        private readonly IBrush<TColor, TPacked> brush;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="FillProcessor{TColor, TPacked}"/> class.
         /// </summary>
-        /// <param name="brush">The brush to source pixel colors from.</param>
-        /// <param name="sourceLayer">
-        /// The layer to treat the source as. 
-        /// If <see cref="TargetLayer.Foreground"/> then take the <paramref name="brush"/> 
-        /// and apply it under the source image, else apply the <paramref name="brush"/> on top 
-        /// of the source image
-        /// </param>
-        public FillProcessor(IBrush brush)
+        /// <param name="brush">The brush to source pixel colors from.</param>      
+        public FillProcessor(IBrush<TColor, TPacked> brush)
         {
             this.brush = brush;
         }

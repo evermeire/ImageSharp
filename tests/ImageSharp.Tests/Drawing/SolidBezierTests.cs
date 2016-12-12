@@ -65,7 +65,6 @@ namespace ImageSharp.Tests.Drawing
                         new PointF(300, 400)
             };
             var color = new Color(Color.HotPink.R, Color.HotPink.G, Color.HotPink.B, 150);
-            var brush = new SolidBrush(color);
 
             var image = new Image(500, 500);
 
@@ -73,7 +72,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .Fill(brush, new BezierPolygon(simplePath))
+                    .Fill(color, new BezierPolygon(simplePath))
                     .Save(output);
             }
 

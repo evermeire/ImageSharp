@@ -14,7 +14,7 @@ namespace ImageSharp.Drawing.Processors
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
-        public DrawPathProcessor(IPen pen, IPath path) 
+        public DrawPathProcessor(IPen<TColor, TPacked> pen, IPath path) 
             : base(pen, new PathToShapeConverter(path))
         {
         }

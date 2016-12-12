@@ -10,9 +10,11 @@ namespace ImageSharp.Drawing
     /// <summary>
     /// interface preresenting a brush
     /// </summary>
-    public interface IPen
+    public interface IPen<TColor, TPacked>
+        where TColor : struct, IPackedPixel<TPacked>
+        where TPacked : struct
     {
-        IBrush Brush { get; }
+        IBrush<TColor, TPacked> Brush { get; }
         float Width { get; }
     }
 }
