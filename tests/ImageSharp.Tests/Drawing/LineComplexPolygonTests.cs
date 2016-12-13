@@ -96,7 +96,9 @@ namespace ImageSharp.Tests.Drawing
 
                 Assert.Equal(Color.HotPink, sourcePixels[200, 150]);
 
-                Assert.Equal(Color.HotPink, sourcePixels[50, 300]);
+                Assert.Equal(Color.HotPink, sourcePixels[50, 300]);                
+
+                Assert.Equal(Color.Blue, sourcePixels[130, 41]);
                 
                 Assert.Equal(Color.Blue, sourcePixels[2, 2]);
 

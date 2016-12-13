@@ -103,7 +103,7 @@ namespace ImageSharp.Drawing.Polygons
             this.outlines = newOutlines;
             this.holes = newHoles;
 
-            paths = outlines.SelectMany(x => x).Union(holes.SelectMany(x => x)).ToArray();
+            paths = newOutlines.SelectMany(x => x).Union(newHoles.SelectMany(x => x)).ToArray();
         }
 
         public RectangleF Bounds { get; }
