@@ -24,7 +24,7 @@ namespace ImageSharp.Tests.Drawing
             using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
             {
                 image
-                    .Fill(Color.Blue)
+                    .BackgroundColor(Color.Blue)
                     .Fill(Color.HotPink)
                     .Save(output);
             }
@@ -48,7 +48,7 @@ namespace ImageSharp.Tests.Drawing
             using (FileStream output = File.OpenWrite($"{path}/Opacity.png"))
             {
                 image
-                    .Fill(Color.Blue)
+                    .BackgroundColor(Color.Blue)
                     .Fill(color)
                     .Save(output);
             }

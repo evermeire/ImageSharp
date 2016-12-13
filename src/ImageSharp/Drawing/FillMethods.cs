@@ -24,7 +24,7 @@ namespace ImageSharp
         /// <param name="source">The source.</param>
         /// <param name="brush">The brush.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush)
+        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush)
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
         {
@@ -39,11 +39,11 @@ namespace ImageSharp
         /// <param name="source">The source.</param>
         /// <param name="color">The color.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, Color color)
+        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color)
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
         {
-            return source.Fill(new SolidBrush(color));
+            return source.Fill(new SolidBrush<TColor, TPacked>(color));
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace ImageSharp
         /// <param name="brush">The brush.</param>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, IShape shape)
+        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, IShape shape)
           where TColor : struct, IPackedPixel<TPacked>
           where TPacked : struct
         {
@@ -71,11 +71,11 @@ namespace ImageSharp
         /// <param name="color">The color.</param>
         /// <param name="shape">The shape.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, IShape shape)
+        public static Image<TColor, TPacked> Fill<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, IShape shape)
           where TColor : struct, IPackedPixel<TPacked>
           where TPacked : struct
         {
-            return source.Fill(new SolidBrush(color),shape);
+            return source.Fill(new SolidBrush<TColor, TPacked>(color),shape);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace ImageSharp
         /// <param name="brush">The brush.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, PointF[] points)
+        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
@@ -104,12 +104,12 @@ namespace ImageSharp
         /// <param name="color">The color.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, PointF[] points)
+        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, PointF[] points)
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
             //using Polygon directly instead of LinearPolygon as its will have less inderection
-            return source.Fill(new SolidBrush(color), new Polygon(new LinearLineSegment(points)));
+            return source.Fill(new SolidBrush<TColor, TPacked>(color), new Polygon(new LinearLineSegment(points)));
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace ImageSharp
         /// <param name="brush">The brush.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush brush, Point[] points)
+        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, IBrush<TColor, TPacked> brush, Point[] points)
          where TColor : struct, IPackedPixel<TPacked>
          where TPacked : struct
         {
@@ -138,12 +138,12 @@ namespace ImageSharp
         /// <param name="color">The color.</param>
         /// <param name="points">The points.</param>
         /// <returns></returns>
-        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, Color color, Point[] points)
+        public static Image<TColor, TPacked> FillPolygon<TColor, TPacked>(this Image<TColor, TPacked> source, TColor color, Point[] points)
          where TColor : struct, IPackedPixel<TPacked>
          where TPacked : struct
         {
             //using Polygon directly instead of LinearPolygon as its will have less inderection
-            return source.Fill(new SolidBrush(color), new Polygon(new LinearLineSegment(points)));
+            return source.Fill(new SolidBrush<TColor, TPacked>(color), new Polygon(new LinearLineSegment(points)));
         }
     }
 }

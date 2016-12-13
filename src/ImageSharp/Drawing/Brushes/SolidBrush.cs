@@ -10,26 +10,35 @@ namespace ImageSharp.Drawing
     using System.Collections.Generic;
     using System.Numerics;
     using System.Threading.Tasks;
-    
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="ImageSharp.Drawing.SolidBrush{ImageSharp.Color, System.UInt32}" />
+    public class SolidBrush : SolidBrush<Color, uint>
+    {
+        public SolidBrush(Color color) : base(color) { }
+    }
+
     /// <summary>
     /// A brush representing a Solid color fill
     /// </summary>
     /// <seealso cref="ImageSharp.Brushs.IBrush" />
-    public class SolidBrush : IBrush
+    public class SolidBrush<TColor, TPacked> : IBrush<TColor, TPacked>
+            where TColor : struct, IPackedPixel<TPacked>
+            where TPacked : struct
     {
-        private readonly Color color;
+        private readonly TColor color;
         /// <summary>
         /// Initializes a new instance of the <see cref="SolidBrush"/> class.
         /// </summary>
         /// <param name="color">The color.</param>
-        public SolidBrush(Color color)
+        public SolidBrush(TColor color)
         {
             this.color = color;
         }
 
-        private class SolidBrushApplicator<TColor, TPacked> : BrushApplicatorBase<TColor, TPacked>
-            where TColor : struct, IPackedPixel<TPacked>
-            where TPacked : struct
+        private class SolidBrushApplicator : BrushApplicatorBase<TColor, TPacked>
         {
 
             private TColor color = default(TColor);
@@ -86,12 +95,10 @@ namespace ImageSharp.Drawing
             }
         }
 
-        public IBrushApplicator<TColor, TPacked> CreateApplicator<TColor, TPacked>(RectangleF region)
-        where TColor : struct, IPackedPixel<TPacked>
-        where TPacked : struct
+        public IBrushApplicator<TColor, TPacked> CreateApplicator(RectangleF region)
         {
             //as Vector4 implementation
-            return new SolidBrushApplicator<TColor, TPacked>(color.ToVector4());
+            return new SolidBrushApplicator(color.ToVector4());
         }
     }
 }

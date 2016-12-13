@@ -10,51 +10,56 @@ namespace ImageSharp.Drawing
     using System.Collections.Generic;
     using System.Numerics;
     using System.Threading.Tasks;
-        
-    public partial class PatternBrush : IBrush
+
+    public partial class PatternBrush : PatternBrush<Color, uint>
     {
-        private readonly Color foreColor;
-        private readonly Color backColor;
+        public PatternBrush(Color foreColor, Color backColor, bool[,] pattern)
+            : base(foreColor, backColor, pattern)
+        {
+
+        }
+    }
+
+    public class PatternBrush<TColor, TPacked> : IBrush<TColor, TPacked>
+        where TColor : struct, IPackedPixel<TPacked>
+        where TPacked : struct
+    {
+        private readonly TColor foreColor;
+        private readonly TColor backColor;
         private readonly bool[,] pattern;
 
 
-        public PatternBrush(Color foreColor, Color backColor, bool[,] pattern)
+        public PatternBrush(TColor foreColor, TColor backColor, bool[,] pattern)
         {
             this.foreColor = foreColor;
             this.backColor = backColor;
             this.pattern = pattern;
         }
 
-        private class PatternBrushApplicator<TColor, TPacked> : BrushApplicatorBase<TColor, TPacked>
-            where TColor : struct, IPackedPixel<TPacked>
-            where TPacked : struct
+        private class PatternBrushApplicator : BrushApplicatorBase<TColor, TPacked>
         {
             private readonly int xLength;
             private readonly int yLength;
-            private readonly bool hasOpacitySet = false;
             private readonly bool[,] pattern;
             private readonly TColor backColor = default(TColor);
             private readonly TColor foreColor = default(TColor);
 
-            public PatternBrushApplicator(Vector4 foreColor, Vector4 backColor, bool[,] pattern)
+            public PatternBrushApplicator(TColor foreColor, TColor backColor, bool[,] pattern)
             {
-                this.foreColor.PackFromVector4(foreColor);
-                this.backColor.PackFromVector4(backColor);
                 this.pattern = pattern;
 
                 this.xLength = pattern.GetLength(0);
                 this.yLength = pattern.GetLength(1);
-                this.hasOpacitySet = foreColor.W != 1 || backColor.W != 1;
             }
 
             public override bool RequiresComposition
             {
                 get
                 {
-                    return hasOpacitySet;
+                    return true;
                 }
             }
-            
+
             public override TColor GetColor(int x, int y)
             {
                 x = x % xLength;
@@ -71,11 +76,9 @@ namespace ImageSharp.Drawing
             }
         }
 
-        public IBrushApplicator<TColor, TPacked> CreateApplicator<TColor, TPacked>(RectangleF region)
-        where TColor : struct, IPackedPixel<TPacked>
-        where TPacked : struct
+        public IBrushApplicator<TColor, TPacked> CreateApplicator(RectangleF region)
         {
-            return new PatternBrushApplicator<TColor, TPacked>(this.foreColor.ToVector4(), this.backColor.ToVector4(), this.pattern);
+            return new PatternBrushApplicator(this.foreColor, this.backColor, this.pattern);
         }
     }
 }

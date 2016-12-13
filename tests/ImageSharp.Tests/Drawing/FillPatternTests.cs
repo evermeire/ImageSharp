@@ -15,7 +15,7 @@ namespace ImageSharp.Tests.Drawing
 
     public class FillPatternBrushTests: FileTestBase
     {
-        private Image Test(string name, Color background, IBrush brush, Color[,] expectedPattern)
+        private Image Test(string name, Color background, IBrush<Color, uint> brush, Color[,] expectedPattern)
         {
             string path = CreateOutputDirectory("Fill", "PatternBrush");
             var image = new Image(20, 20);

@@ -23,13 +23,13 @@ namespace ImageSharp.Drawing.Processors
     {
         private const float Epsilon = 0.001f;
 
-        private readonly IBrush brush;
+        private readonly IBrush<TColor, TPacked> brush;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="FillProcessor{TColor, TPacked}"/> class.
         /// </summary>
         /// <param name="brush">The brush to source pixel colors from.</param>      
-        public FillProcessor(IBrush brush)
+        public FillProcessor(IBrush<TColor, TPacked> brush)
         {
             this.brush = brush;
         }
@@ -63,8 +63,7 @@ namespace ImageSharp.Drawing.Processors
             // should probably be disposable if we want an image brush so we can dispose of the underlying 
             // PixelAccessor<TColor, TPacked> that it would need, wonder if its woth doing now to prevent 
             // api breaks later.
-            var applicator = brush.CreateApplicator<TColor, TPacked>(sourceRectangle);
-            var compositColors = applicator.RequiresComposition;
+            var applicator = brush.CreateApplicator(sourceRectangle);
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             {
@@ -82,37 +81,16 @@ namespace ImageSharp.Drawing.Processors
                         {
                             int offsetX = x - startX;
                             int offsetColorX = x - minX;
+                            
+                            Vector4 backgroundVector = sourcePixels[offsetX, offsetY].ToVector4();
+                            Vector4 sourceVector = colors[offsetColorX].ToVector4();
+                            
+                            var finalColor = Vector4BlendTransforms.PremultipliedLerp(backgroundVector, sourceVector, 1);
+                            finalColor.W = backgroundVector.W;
 
-                            var packed = colors[offsetColorX];
-                            if (compositColors)
-                            {
-                                var color = packed.ToVector4();
-                                // based on the alpha of the foreground color shift the background color towards the forgound by the opactiy level
-                                // need to consider what opactiy should be like when doing this???
-                                // this logic seems to be working for now
-                                float a = color.W;
-                                if (a != 1)
-                                {
-                                    TColor background = sourcePixels[offsetX, offsetY];
-
-                                    if (Math.Abs(a) > Epsilon && a < 1 )
-                                    {
-                                        Vector4 backgroundColor = background.ToVector4();
-                                        
-                                        color = Vector4.Lerp(backgroundColor, new Vector4(color.X, color.Y, color.Z, 1), a);
-
-                                        packed = default(TColor);
-                                        packed.PackFromVector4(color);
-                                    }
-                                    else
-                                    {
-                                        packed = background;
-                                    }
-                                }
-                            }
-
+                            TColor packed = default(TColor);
+                            packed.PackFromVector4(finalColor);
                             sourcePixels[offsetX, offsetY] = packed;
-
                         }
                     });
             }
