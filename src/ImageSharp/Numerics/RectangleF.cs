@@ -255,6 +255,20 @@ namespace ImageSharp
             return new Rectangle(x, y, width, height);
         }
 
+
+        /// <summary>
+        /// Outsets the specified region.
+        /// </summary>
+        /// <param name="region">The region.</param>
+        /// <param name="width">The width.</param>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public static RectangleF Outset(RectangleF region, float width)
+        {
+            var dblWidth = width * 2;
+            return new RectangleF(region.X - width, region.Y - width, region.Width + dblWidth, region.Height + dblWidth);
+        }
+
         /// <summary>
         /// Determines if the specfied <see cref="Rectangle"/> intersects the rectangular region defined by
         /// this <see cref="Rectangle"/>.

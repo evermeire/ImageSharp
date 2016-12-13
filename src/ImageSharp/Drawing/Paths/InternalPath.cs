@@ -17,6 +17,7 @@ namespace ImageSharp.Drawing.Paths
     {
         internal readonly Vector2[] points;
         private readonly bool closedPath;
+        private readonly Lazy<float> totalDistance;
 
         internal InternalPath(IEnumerable<ILineSegment> segments, bool isClosedPath)
         {
@@ -31,11 +32,36 @@ namespace ImageSharp.Drawing.Paths
             var maxY = points.Max(x => x.Y);
 
             Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
+            totalDistance = new Lazy<float>(CalculateDistance);
         }
 
         private Vector2[] FixSegments(IEnumerable<ILineSegment> segments)
         {
             return segments.SelectMany(x => x.AsSimpleLinearPath()).ToArray();
+        }
+
+        private float CalculateDistance()
+        {
+            float distance = 0;
+            var polyCorners = points.Length;
+
+            if (!closedPath)
+            {
+                polyCorners -= 1;
+            }
+
+            for (var i = 0; i < polyCorners; i++)
+            {
+                var next = i + 1;
+                if (closedPath && next == polyCorners)
+                {
+                    next = 0;
+                }
+
+                distance += (points[i] - points[next]).LengthSquared();
+            }
+
+            return (float)Math.Sqrt(distance);
         }
 
         private float[] constant;
@@ -76,7 +102,7 @@ namespace ImageSharp.Drawing.Paths
             }
         }
 
-        private float DistanceSquared(Vector2 start, Vector2 end, Vector2 point)
+        private bool CalculateShorterDistance(Vector2 start, Vector2 end, Vector2 point, ref PointInfoInternal info)
         {
             var px = end.X - start.X;
             var py = end.Y - start.Y;
@@ -100,12 +126,26 @@ namespace ImageSharp.Drawing.Paths
             var dx = x - point.X;
             var dy = y - point.Y;
 
-            return dx * dx + dy * dy;
+
+            var dist = dx * dx + dy * dy;
+
+            if (info.DistanceSquared > dist)
+            {
+                info.DistanceSquared = dist;
+                info.x = x;
+                info.y = y;
+                return true;
+            }
+            return false;
         }
 
-        public float DistanceFromPath(Vector2 point)
+        public PointInfo DistanceFromPath(Vector2 point)
         {
-            float distance = float.MaxValue;
+            var internalInfo = new PointInfoInternal
+            {
+                DistanceSquared = float.MaxValue
+            };
+
             var polyCorners = points.Length;
 
             if (!closedPath)
@@ -113,6 +153,8 @@ namespace ImageSharp.Drawing.Paths
                 polyCorners -= 1;
             }
 
+            float totalDistanceSqaured = 0;
+            float totalDistanceToPointSqaured = 0;
             for (var i = 0; i < polyCorners; i++)
             {
                 var next = i + 1;
@@ -121,15 +163,23 @@ namespace ImageSharp.Drawing.Paths
                     next = 0;
                 }
 
-                var lastDistance = DistanceSquared(points[i], points[next], point);
 
-                if (lastDistance < distance)
+                if (CalculateShorterDistance(points[i], points[next], point, ref internalInfo))
                 {
-                    distance = lastDistance;
+                    totalDistanceToPointSqaured = totalDistanceSqaured + Vector2.DistanceSquared(points[i], point);
                 }
+                totalDistanceSqaured += Vector2.DistanceSquared(points[i], points[next]);
             }
 
-            return (float)Math.Sqrt(distance);
+
+            //lets now word out the current distance
+
+            return new PointInfo
+            {
+                DistanceAlongPath = (float)Math.Sqrt(totalDistanceToPointSqaured),
+                DistanceFromPath = (float)Math.Sqrt(internalInfo.DistanceSquared),
+                Point = point
+            };
         }
 
 
@@ -170,6 +220,40 @@ namespace ImageSharp.Drawing.Paths
         public RectangleF Bounds
         {
             get;
+        }
+
+
+        public Vector2 Start
+        {
+            get
+            {
+                return points[0];
+            }
+        }
+
+        public Vector2 End
+        {
+            get
+            {
+                if (closedPath)
+                {
+                    return points[0];
+                }
+                else
+                {
+
+                    return points[points.Length-1];
+                }
+            }
+        }
+
+        public float Length => totalDistance.Value;
+
+        private struct PointInfoInternal
+        {
+            public float DistanceSquared;
+            public float x;
+            public float y;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -63,6 +64,18 @@ namespace ImageSharp.Drawing.Polygons
             }
 
             return dist;
+        }
+
+        public IEnumerator<IPath> GetEnumerator()
+        {
+            // TODO this needs fixing using clipper to simplify all the shapes to get the paths returned properly
+
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

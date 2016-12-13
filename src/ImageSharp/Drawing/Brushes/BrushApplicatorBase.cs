@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 
 namespace ImageSharp.Drawing.Processing
 {
-    public abstract class BrushApplicatorBase<TColor, TPacked> : IBrushApplicator<TColor, TPacked>
-        where TColor : struct, IPackedPixel<TPacked>
-        where TPacked : struct
+    public abstract class BrushApplicatorBase<TColor, TPacked>
     {
         public virtual bool RequiresComposition
         {
@@ -16,6 +15,8 @@ namespace ImageSharp.Drawing.Processing
                 return false;
             }
         }
+
+       
 
         public abstract TColor GetColor(int x, int y);
 

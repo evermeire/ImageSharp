@@ -23,8 +23,12 @@ namespace ImageSharp.Drawing.Paths
         }
 
         public RectangleF Bounds => innerPath.Bounds;
-        
-        float IPath.Distance(int x, int y)
+
+        public bool IsClosed => false;
+
+        public float Length => innerPath.Length;
+
+        public PointInfo Distance(int x, int y)
         {
             return innerPath.DistanceFromPath(new Vector2(x, y));
         }

@@ -48,6 +48,38 @@ namespace ImageSharp.Tests.Drawing
 
 
         [Fact]
+        public void ImageShouldBeOverlayedByPathDashed()
+        {
+            string path = CreateOutputDirectory("Drawing", "Lines");
+            var image = new Image(500, 500);
+
+
+            var pen = new Pen(Color.HotPink, 5, new[] { 3f, 2f });
+            using (FileStream output = File.OpenWrite($"{path}/Dashed.png"))
+            {
+                image
+                    .BackgroundColor(Color.Blue)
+                    .DrawLines(pen, new[] {
+                            new Point(10, 10),
+                            new Point(200, 150),
+                            new Point(50, 300)
+                    })
+                    .Save(output);
+            }
+
+            using (var sourcePixels = image.Lock())
+            {
+                Assert.Equal(Color.HotPink, sourcePixels[9, 9]);
+
+                Assert.Equal(Color.HotPink, sourcePixels[199, 149]);
+
+                Assert.Equal(Color.Blue, sourcePixels[50, 50]);
+            }
+
+        }
+
+
+        [Fact]
         public void ImageShouldBeOverlayedPathWithOpacity()
         {
             string path = CreateOutputDirectory("Drawing", "Lines");

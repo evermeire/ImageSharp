@@ -12,6 +12,7 @@ namespace ImageSharp.Drawing.Polygons
     using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
+    using System.Collections;
 
     /// <summary>
     /// a <see cref="BezierPolygon"/> represents a contiguose bound region 
@@ -33,5 +34,12 @@ namespace ImageSharp.Drawing.Polygons
         public RectangleF Bounds => innerPolygon.Bounds;
 
         public float Distance(int x, int y) => innerPolygon.Distance(x, y);
+
+        public IEnumerator<IPath> GetEnumerator()
+        {
+            return innerPolygon.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }
 }

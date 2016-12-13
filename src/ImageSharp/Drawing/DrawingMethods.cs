@@ -29,7 +29,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            return source.Process(new DrawShapeProcessor<TColor, TPacked>(pen, shape));
+            return source.Process(new DrawPathProcessor<TColor, TPacked>(pen, shape));
         }
 
         /// <summary>

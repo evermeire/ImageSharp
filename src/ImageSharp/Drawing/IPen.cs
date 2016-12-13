@@ -6,6 +6,7 @@
 namespace ImageSharp.Drawing
 {
     using System;
+    using Processing;
 
     /// <summary>
     /// interface preresenting a brush
@@ -14,7 +15,15 @@ namespace ImageSharp.Drawing
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
     {
-        IBrush<TColor, TPacked> Brush { get; }
-        float Width { get; }
+        /// <summary>
+        /// Creates the applicator for this bursh.
+        /// </summary>
+        /// <param name="region">The region the brush will be applied to.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The <paramref name="region"/> when being applied to things like shapes would ussually be the 
+        /// bounding box of the shape not necorserrally the shape of the whole image 
+        /// </remarks>
+        IPenApplicator<TColor, TPacked> CreateApplicator(RectangleF region);
     }
 }

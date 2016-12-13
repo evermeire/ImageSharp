@@ -7,7 +7,7 @@ namespace ImageSharp.Drawing
     using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
-    public interface IShape
+    public interface IShape : IEnumerable<IPath>
     {
         RectangleF Bounds { get; }
 

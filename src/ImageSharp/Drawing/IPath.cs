@@ -11,11 +11,15 @@ namespace ImageSharp.Drawing
     {
         RectangleF Bounds { get; }
 
+        bool IsClosed { get; }
+
+        float Length { get; }
+
         /// <summary>
-        /// the distance of the point from the outline of the shape, if the value is negative it is inside the polygon bounds
+        /// a point on the path <paramref name="distance"/> pixels along the path
         /// </summary>
-        /// <param name="point">The point</param>
+        /// <param name="distance">The point</param>
         /// <returns></returns>
-        float Distance(int x, int y);        
+        PointInfo Distance(int x, int y);
     }
 }

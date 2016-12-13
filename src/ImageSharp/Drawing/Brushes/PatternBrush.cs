@@ -36,7 +36,7 @@ namespace ImageSharp.Drawing
             this.pattern = pattern;
         }
 
-        private class PatternBrushApplicator : BrushApplicatorBase<TColor, TPacked>
+        private class PatternBrushApplicator : IBrushApplicator<TColor, TPacked>
         {
             private readonly int xLength;
             private readonly int yLength;
@@ -46,24 +46,18 @@ namespace ImageSharp.Drawing
 
             public PatternBrushApplicator(TColor foreColor, TColor backColor, bool[,] pattern)
             {
+                this.foreColor = foreColor;
+                this.backColor = backColor;
                 this.pattern = pattern;
 
                 this.xLength = pattern.GetLength(0);
                 this.yLength = pattern.GetLength(1);
             }
-
-            public override bool RequiresComposition
+            
+            public TColor GetColor(Vector2 point)
             {
-                get
-                {
-                    return true;
-                }
-            }
-
-            public override TColor GetColor(int x, int y)
-            {
-                x = x % xLength;
-                y = y % yLength;
+                var x = (int)point.X % xLength;
+                var y = (int)point.Y % yLength;
 
                 if (pattern[x, y])
                 {
