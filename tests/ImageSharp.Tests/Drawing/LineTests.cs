@@ -53,13 +53,11 @@ namespace ImageSharp.Tests.Drawing
             string path = CreateOutputDirectory("Drawing", "Lines");
             var image = new Image(500, 500);
 
-
-            var pen = new Pen(Color.HotPink, 5, new[] { 3f, 2f });
             using (FileStream output = File.OpenWrite($"{path}/Dashed.png"))
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(pen, new[] {
+                    .DrawLines(Pen.Dash(Color.HotPink, 5), new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)
@@ -67,17 +65,65 @@ namespace ImageSharp.Tests.Drawing
                     .Save(output);
             }
 
-            using (var sourcePixels = image.Lock())
+        }
+
+        [Fact]
+        public void ImageShouldBeOverlayedByPathDotted()
+        {
+            string path = CreateOutputDirectory("Drawing", "Lines");
+            var image = new Image(500, 500);
+
+            using (FileStream output = File.OpenWrite($"{path}/Dot.png"))
             {
-                Assert.Equal(Color.HotPink, sourcePixels[9, 9]);
+                image
+                    .BackgroundColor(Color.Blue)
+                    .DrawLines(Pen.Dot(Color.HotPink, 5), new[] {
+                            new Point(10, 10),
+                            new Point(200, 150),
+                            new Point(50, 300)
+                    })
+                    .Save(output);
+            }
+        }
 
-                Assert.Equal(Color.HotPink, sourcePixels[199, 149]);
+        [Fact]
+        public void ImageShouldBeOverlayedByPathDashDot()
+        {
+            string path = CreateOutputDirectory("Drawing", "Lines");
+            var image = new Image(500, 500);
 
-                Assert.Equal(Color.Blue, sourcePixels[50, 50]);
+            using (FileStream output = File.OpenWrite($"{path}/DashDot.png"))
+            {
+                image
+                    .BackgroundColor(Color.Blue)
+                    .DrawLines(Pen.DashDot(Color.HotPink, 5), new[] {
+                            new Point(10, 10),
+                            new Point(200, 150),
+                            new Point(50, 300)
+                    })
+                    .Save(output);
             }
 
         }
 
+        [Fact]
+        public void ImageShouldBeOverlayedByPathDashDotDot()
+        {
+            string path = CreateOutputDirectory("Drawing", "Lines");
+            var image = new Image(500, 500);
+
+            using (FileStream output = File.OpenWrite($"{path}/DashDotDot.png"))
+            {
+                image
+                    .BackgroundColor(Color.Blue)
+                    .DrawLines(Pen.DashDotDot(Color.HotPink, 5), new[] {
+                            new Point(10, 10),
+                            new Point(200, 150),
+                            new Point(50, 300)
+                    })
+                    .Save(output);
+            }
+        }
 
         [Fact]
         public void ImageShouldBeOverlayedPathWithOpacity()

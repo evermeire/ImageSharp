@@ -9,16 +9,16 @@ namespace ImageSharp.Drawing
     using Processing;
 
     /// <summary>
-    /// interface preresenting a brush
+    /// interface preresenting a Pen
     /// </summary>
     public interface IPen<TColor, TPacked>
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
     {
         /// <summary>
-        /// Creates the applicator for this bursh.
+        /// Creates the applicator for applying this pen to an Image
         /// </summary>
-        /// <param name="region">The region the brush will be applied to.</param>
+        /// <param name="region">The region the pen will be applied to.</param>
         /// <returns></returns>
         /// <remarks>
         /// The <paramref name="region"/> when being applied to things like shapes would ussually be the 

@@ -13,7 +13,7 @@ namespace ImageSharp.Drawing.Paths
     using System.Numerics;
     using System.Threading.Tasks;
 
-    internal class InternalPath
+    internal class InternalPath 
     {
         internal readonly Vector2[] points;
         private readonly bool closedPath;
@@ -66,6 +66,7 @@ namespace ImageSharp.Drawing.Paths
 
         private float[] constant;
         private float[] multiple;
+        private float[] distance;
         object locker = new object();
         bool calculated = false;
         
@@ -81,10 +82,14 @@ namespace ImageSharp.Drawing.Paths
                 var polyCorners = poly.Length;
                 constant = new float[polyCorners];
                 multiple = new float[polyCorners];
+                distance = new float[polyCorners];
                 int i, j = polyCorners - 1;
+
+                distance[0] = 0;
 
                 for (i = 0; i < polyCorners; i++)
                 {
+                    distance[j] = distance[i] + Vector2.Distance(poly[i], poly[j]);
                     if (poly[j].Y == poly[i].Y)
                     {
                         constant[i] = poly[i].X;
@@ -141,7 +146,10 @@ namespace ImageSharp.Drawing.Paths
 
         public PointInfo DistanceFromPath(Vector2 point)
         {
+            CalculateConstants();
+
             var internalInfo = new PointInfoInternal();
+            internalInfo.DistanceSquared = float.MaxValue;//set it to max so that CalculateShorterDistance can reduce it back down
 
             var polyCorners = points.Length;
 
@@ -149,9 +157,8 @@ namespace ImageSharp.Drawing.Paths
             {
                 polyCorners -= 1;
             }
-
-            float totalDistanceSqaured = 0;
-            float totalDistanceToPointSquared = 0;
+            
+            int closestPoint = 0;
             for (var i = 0; i < polyCorners; i++)
             {
                 var next = i + 1;
@@ -162,14 +169,13 @@ namespace ImageSharp.Drawing.Paths
 
                 if (CalculateShorterDistance(points[i], points[next], point, ref internalInfo))
                 {
-                    totalDistanceToPointSquared = totalDistanceSqaured + Vector2.DistanceSquared(points[i], point);
+                    closestPoint = i;
                 }
-                totalDistanceSqaured += Vector2.DistanceSquared(points[i], points[next]);
             }
 
             return new PointInfo
             {
-                DistanceAlongPath = (float)Math.Sqrt(totalDistanceToPointSquared),
+                DistanceAlongPath = distance[closestPoint] + Vector2.Distance(points[closestPoint], point),
                 DistanceFromPath = (float)Math.Sqrt(internalInfo.DistanceSquared),
                 Point = point
             };
@@ -209,7 +215,7 @@ namespace ImageSharp.Drawing.Paths
 
             return oddNodes;
         }
-
+        
         public RectangleF Bounds
         {
             get;
@@ -248,5 +254,7 @@ namespace ImageSharp.Drawing.Paths
             public float x;
             public float y;
         }
+
+
     }
 }

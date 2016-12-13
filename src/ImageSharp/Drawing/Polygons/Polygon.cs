@@ -80,5 +80,10 @@ namespace ImageSharp.Drawing.Polygons
         {
             return innerPath.DistanceFromPath(new Vector2(x,y));
         }
+
+        public IEnumerable<Vector2> AsSimpleLinearPath()
+        {
+            return innerPath.points;
+        }
     }
 }

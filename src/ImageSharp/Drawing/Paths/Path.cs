@@ -7,6 +7,7 @@ namespace ImageSharp.Drawing.Paths
 {
 
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
@@ -16,6 +17,7 @@ namespace ImageSharp.Drawing.Paths
     public class Path : IPath
     {
         private readonly InternalPath innerPath;
+        private readonly IEnumerable<InternalPath> innerPaths;
 
         internal Path(params ILineSegment[] segment)
         {
@@ -27,6 +29,11 @@ namespace ImageSharp.Drawing.Paths
         public bool IsClosed => false;
 
         public float Length => innerPath.Length;
+
+        public IEnumerable<Vector2> AsSimpleLinearPath()
+        {
+            return innerPath.points;
+        }
 
         public PointInfo Distance(int x, int y)
         {

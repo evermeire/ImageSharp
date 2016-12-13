@@ -31,6 +31,7 @@ namespace ImageSharp.Drawing.Polygons
             innerPolygon = new Polygon(new LinearLineSegment(points));
         }
 
+
         public RectangleF Bounds => innerPolygon.Bounds;
 
         public float Distance(int x, int y) => innerPolygon.Distance(x, y);

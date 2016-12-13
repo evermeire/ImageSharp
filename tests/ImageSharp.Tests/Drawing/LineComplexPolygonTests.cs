@@ -67,6 +67,75 @@ namespace ImageSharp.Tests.Drawing
 
 
         [Fact]
+        public void ImageShouldBeOverlayedByPolygonOutlineOverlapping()
+        {
+            string path = CreateOutputDirectory("Drawing", "LineComplexPolygon");
+            var simplePath = new LinearPolygon(
+                            new Point(10, 10),
+                            new Point(200, 150),
+                            new Point(50, 300));
+
+            var hole1 = new LinearPolygon(
+                            new Point(37, 85),
+                            new Point(130, 40),
+                            new Point(65, 137));
+
+            var image = new Image(500, 500);
+
+            using (FileStream output = File.OpenWrite($"{path}/SimpleOverlapping.png"))
+            {
+                image
+                .BackgroundColor(Color.Blue)
+                .DrawPolygon(Color.HotPink, 5, new ComplexPolygon(simplePath, hole1))
+                .Save(output);
+            }
+
+            using (var sourcePixels = image.Lock())
+            {
+                Assert.Equal(Color.HotPink, sourcePixels[10, 10]);
+
+                Assert.Equal(Color.HotPink, sourcePixels[200, 150]);
+
+                Assert.Equal(Color.HotPink, sourcePixels[50, 300]);
+                
+                Assert.Equal(Color.Blue, sourcePixels[2, 2]);
+
+                //inside hole
+                Assert.Equal(Color.Blue, sourcePixels[57, 99]);
+
+                //inside shape
+                Assert.Equal(Color.Blue, sourcePixels[100, 192]);
+            }
+        }
+
+
+        [Fact]
+        public void ImageShouldBeOverlayedByPolygonOutlineDashed()
+        {
+            string path = CreateOutputDirectory("Drawing", "LineComplexPolygon");
+            var simplePath = new LinearPolygon(
+                            new Point(10, 10),
+                            new Point(200, 150),
+                            new Point(50, 300));
+
+            var hole1 = new LinearPolygon(
+                            new Point(37, 85),
+                            new Point(93, 85),
+                            new Point(65, 137));
+
+            var image = new Image(500, 500);
+
+            using (FileStream output = File.OpenWrite($"{path}/Dashed.png"))
+            {
+                image
+                .BackgroundColor(Color.Blue)
+                .DrawPolygon(Pen.Dash(Color.HotPink, 5), new ComplexPolygon(simplePath, hole1))
+                .Save(output);
+            }
+        }
+
+
+        [Fact]
         public void ImageShouldBeOverlayedPolygonOutlineWithOpacity()
         {
             string path = CreateOutputDirectory("Drawing", "LineComplexPolygon");
