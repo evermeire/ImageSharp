@@ -141,10 +141,7 @@ namespace ImageSharp.Drawing.Paths
 
         public PointInfo DistanceFromPath(Vector2 point)
         {
-            var internalInfo = new PointInfoInternal
-            {
-                DistanceSquared = float.MaxValue
-            };
+            var internalInfo = new PointInfoInternal();
 
             var polyCorners = points.Length;
 
@@ -154,7 +151,7 @@ namespace ImageSharp.Drawing.Paths
             }
 
             float totalDistanceSqaured = 0;
-            float totalDistanceToPointSqaured = 0;
+            float totalDistanceToPointSquared = 0;
             for (var i = 0; i < polyCorners; i++)
             {
                 var next = i + 1;
@@ -163,20 +160,16 @@ namespace ImageSharp.Drawing.Paths
                     next = 0;
                 }
 
-
                 if (CalculateShorterDistance(points[i], points[next], point, ref internalInfo))
                 {
-                    totalDistanceToPointSqaured = totalDistanceSqaured + Vector2.DistanceSquared(points[i], point);
+                    totalDistanceToPointSquared = totalDistanceSqaured + Vector2.DistanceSquared(points[i], point);
                 }
                 totalDistanceSqaured += Vector2.DistanceSquared(points[i], points[next]);
             }
 
-
-            //lets now word out the current distance
-
             return new PointInfo
             {
-                DistanceAlongPath = (float)Math.Sqrt(totalDistanceToPointSqaured),
+                DistanceAlongPath = (float)Math.Sqrt(totalDistanceToPointSquared),
                 DistanceFromPath = (float)Math.Sqrt(internalInfo.DistanceSquared),
                 Point = point
             };
