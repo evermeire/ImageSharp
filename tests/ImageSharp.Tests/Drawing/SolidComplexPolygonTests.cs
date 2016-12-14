@@ -12,7 +12,7 @@ namespace ImageSharp.Tests.Drawing
     using Drawing;
     using ImageSharp.Drawing;
     using System.Numerics;
-    using ImageSharp.Drawing.Polygons;
+    using ImageSharp.Drawing.Shapes;
 
     public class SolidComplexPolygonTests : FileTestBase
     {

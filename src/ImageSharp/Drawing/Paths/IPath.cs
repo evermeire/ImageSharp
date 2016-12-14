@@ -1,6 +1,6 @@
 ﻿
 
-namespace ImageSharp.Drawing
+namespace ImageSharp.Drawing.Paths
 {
     using System;
     using System.Collections.Generic;

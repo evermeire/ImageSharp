@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
-using ImageSharp.Drawing.Processing;
 using System.Numerics;
+using ImageSharp.Drawing.Brushes;
+using ImageSharp.Drawing.Pens.Processors;
+using ImageSharp.Drawing.Processors;
+using ImageSharp.Drawing.Paths;
 
-namespace ImageSharp.Drawing
+namespace ImageSharp.Drawing.Pens
 {
     /// <summary>
     /// 

@@ -7,6 +7,7 @@ namespace ImageSharp.Tests.Drawing
 {
     using Drawing;
     using ImageSharp.Drawing;
+    using ImageSharp.Drawing.Pens;
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;

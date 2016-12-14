@@ -6,9 +6,11 @@
 namespace ImageSharp
 {
     using Drawing;
+    using Drawing.Brushes;
     using Drawing.Paths;
-    using Drawing.Polygons;
+    using Drawing.Pens;
     using Drawing.Processors;
+    using Drawing.Shapes;
     using Processors;
 
     /// <summary>

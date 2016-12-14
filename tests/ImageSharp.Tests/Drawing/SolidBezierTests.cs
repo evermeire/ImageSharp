@@ -7,7 +7,7 @@ namespace ImageSharp.Tests.Drawing
 {
     using Drawing;
     using ImageSharp.Drawing;
-    using ImageSharp.Drawing.Polygons;
+    using ImageSharp.Drawing.Shapes;
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;

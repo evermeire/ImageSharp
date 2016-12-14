@@ -3,24 +3,24 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Drawing.Processing
+namespace ImageSharp.Drawing.Processors
 {
     using System;
+    using System.Numerics;
 
     /// <summary>
     /// interface preresenting a brush
     /// </summary>
-    public interface IPenApplicator<TColor, TPacked>
+    public interface IBrushApplicator<TColor, TPacked>
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
-        RectangleF RequiredRegion { get; }
+       
         /// <summary>
         /// Gets the color for a single pixel.
         /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
+        /// <param name="point">The point.</param>
         /// <returns></returns>
-        ColoredPointInfo<TColor, TPacked> GetColor(PointInfo info);
+        TColor GetColor(Vector2 point);
     }
 }

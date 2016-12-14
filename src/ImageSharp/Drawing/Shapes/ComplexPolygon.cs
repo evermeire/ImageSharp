@@ -6,7 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageSharp.Drawing.Polygons
+namespace ImageSharp.Drawing.Shapes
 {
     public sealed class ComplexPolygon : IShape
     {
@@ -95,8 +95,8 @@ namespace ImageSharp.Drawing.Polygons
             clipper.Execute(ClipperLib.ClipType.ctDifference, tree);
 
             //convert the 'tree' back to paths
-            List<IShape> newOutlines = new List<Drawing.IShape>();
-            List<IShape> newHoles = new List<Drawing.IShape>();
+            List<IShape> newOutlines = new List<IShape>();
+            List<IShape> newHoles = new List<IShape>();
 
             ExtractOutlines(tree, newOutlines, newHoles);
 

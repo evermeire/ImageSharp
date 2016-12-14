@@ -5,9 +5,9 @@
 
 namespace ImageSharp.Drawing
 {
-    using Processing;
     using System;
-    
+    using Processors;
+
     /// <summary>
     /// interface representing a brush
     /// </summary>

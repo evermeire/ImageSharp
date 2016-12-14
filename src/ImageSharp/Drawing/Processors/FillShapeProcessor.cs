@@ -10,6 +10,7 @@ namespace ImageSharp.Drawing.Processors
     using System.Threading.Tasks;
     using Drawing;
     using ImageSharp.Processors;
+    using Shapes;
 
     public class FillShapeProcessor<TColor, TPacked> : ImageFilteringProcessor<TColor, TPacked>
         where TColor : struct, IPackedPixel<TPacked>

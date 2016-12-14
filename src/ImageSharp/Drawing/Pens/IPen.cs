@@ -3,10 +3,10 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Drawing
+namespace ImageSharp.Drawing.Pens
 {
     using System;
-    using Processing;
+    using Pens.Processors;
 
     /// <summary>
     /// interface preresenting a Pen

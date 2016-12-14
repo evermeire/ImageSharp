@@ -12,6 +12,7 @@ namespace ImageSharp.Tests.Drawing
     using System.IO;
     using System.Numerics;
     using Xunit;
+    using ImageSharp.Drawing.Brushes;
 
     public class FillPatternBrushTests: FileTestBase
     {

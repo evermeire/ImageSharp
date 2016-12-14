@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageSharp.Drawing
+namespace ImageSharp.Drawing.Paths
 {
     /// <summary>
     /// Returns some meta data about the nearest point on a path from a vector 

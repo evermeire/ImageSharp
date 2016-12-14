@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace ImageSharp.Drawing.Processing
+namespace ImageSharp.Drawing.Brushes.Processing
 {
     public abstract class BrushApplicatorBase<TColor, TPacked>
     {

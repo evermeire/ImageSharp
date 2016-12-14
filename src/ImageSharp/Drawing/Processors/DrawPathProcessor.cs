@@ -12,6 +12,9 @@ namespace ImageSharp.Drawing.Processors
     using System.Threading.Tasks;
     using Drawing;
     using ImageSharp.Processors;
+    using Paths;
+    using Shapes;
+    using Pens;
 
     internal class DrawPathProcessor<TColor, TPacked> : ImageFilteringProcessor<TColor, TPacked>
         where TColor : struct, IPackedPixel<TPacked>

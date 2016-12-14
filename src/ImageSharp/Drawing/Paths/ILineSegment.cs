@@ -1,5 +1,5 @@
 ﻿
-namespace ImageSharp.Drawing
+namespace ImageSharp.Drawing.Paths
 {
 
     using System;

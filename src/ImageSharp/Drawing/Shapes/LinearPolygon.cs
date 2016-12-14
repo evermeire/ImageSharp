@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Drawing.Polygons
+namespace ImageSharp.Drawing.Shapes
 {
     using Paths;
     using System;
@@ -17,19 +17,20 @@ namespace ImageSharp.Drawing.Polygons
     /// <summary>
     /// a <see cref="BezierPolygon"/> represents a contiguose bound region 
     /// </summary>
-    public sealed class BezierPolygon : IShape
+    public sealed class LinearPolygon : IShape
     {
         Polygon innerPolygon;
         
-        public BezierPolygon(params Point[] points)
+        public LinearPolygon(params Point[] points)
         {
-            innerPolygon = new Polygon(new BezierLineSegment(points));
+            innerPolygon = new Polygon(new LinearLineSegment(points));
         }
 
-        public BezierPolygon(params PointF[] points)
+        public LinearPolygon(params PointF[] points)
         {
-            innerPolygon = new Polygon(new BezierLineSegment(points));
+            innerPolygon = new Polygon(new LinearLineSegment(points));
         }
+
 
         public RectangleF Bounds => innerPolygon.Bounds;
 
@@ -40,9 +41,6 @@ namespace ImageSharp.Drawing.Polygons
             return innerPolygon.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return innerPolygon.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }
 }

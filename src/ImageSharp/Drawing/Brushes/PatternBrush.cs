@@ -3,13 +3,14 @@
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
 
-namespace ImageSharp.Drawing
+namespace ImageSharp.Drawing.Brushes
 {
     using Processing;
     using System;
     using System.Collections.Generic;
     using System.Numerics;
     using System.Threading.Tasks;
+    using Processors;
 
     public partial class PatternBrush : PatternBrush<Color, uint>
     {
