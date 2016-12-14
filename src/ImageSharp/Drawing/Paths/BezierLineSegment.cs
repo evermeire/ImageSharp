@@ -1,4 +1,4 @@
-﻿// <copyright file="IImageSampler.cs" company="James Jackson-South">
+﻿// <copyright file="BezierLineSegment.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -12,9 +12,14 @@ namespace ImageSharp.Drawing.Paths
     using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
+    using Brushes;
 
     //code for this taken from http://devmag.org.za/2011/04/05/bzier-curves-a-tutorial/
 
+    /// <summary>
+    /// Represents a line segment that conistst of control points that will be rendered as a cubic bezier curve
+    /// </summary>
+    /// <seealso cref="ImageSharp.Drawing.Paths.ILineSegment" />
     public class BezierLineSegment : ILineSegment
     {
         private const int SEGMENTS_PER_CURVE = 50;
@@ -27,16 +32,28 @@ namespace ImageSharp.Drawing.Paths
 
         private int curveCount; //how many bezier curves in this path?
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BezierLineSegment"/> class.
+        /// </summary>
+        /// <param name="points">The points.</param>
         public BezierLineSegment(IEnumerable<PointF> points)
             : this(points?.Select(x => x.ToVector2()).ToArray())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BezierLineSegment"/> class.
+        /// </summary>
+        /// <param name="points">The points.</param>
         public BezierLineSegment(IEnumerable<Point> points)
             : this(points?.Select(x => x.ToVector2()).ToArray())
-        {
+        {            
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BezierLineSegment"/> class.
+        /// </summary>
+        /// <param name="points">The points.</param>
         public BezierLineSegment(params PointF[] points)
             : this(points?.Select(x => x.ToVector2()).ToArray())
         {
@@ -55,10 +72,9 @@ namespace ImageSharp.Drawing.Paths
             this.curveCount = (points.Length - 1) / 3;
             this.linePoints = GetDrawingPoints(points);
         }
-
-        public List<Vector2> GetDrawingPoints(Vector2[] controlPoints)
+        
+        private List<Vector2> GetDrawingPoints(Vector2[] controlPoints)
         {
-
             var maxPoints = (int)Math.Ceiling(SEGMENTS_PER_CURVE * (float)this.curveCount);
             List<Vector2> drawingPoints = new List<Vector2>(maxPoints); //set a default size to be efficient?
 
@@ -101,7 +117,11 @@ namespace ImageSharp.Drawing.Paths
 
             return p;
         }
-        
+
+        /// <summary>
+        /// Returns the current <see cref="ILineSegment" /> a simple linear path.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Vector2> AsSimpleLinearPath()
         {
             return linePoints;

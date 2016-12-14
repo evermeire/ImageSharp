@@ -12,6 +12,12 @@ namespace ImageSharp.Drawing.Processors
     using ImageSharp.Processors;
     using Shapes;
 
+    /// <summary>
+    /// Usinf a brsuh and a shape fills shape with contents of brush the
+    /// </summary>
+    /// <typeparam name="TColor">The type of the color.</typeparam>
+    /// <typeparam name="TPacked">The type of the packed.</typeparam>
+    /// <seealso cref="ImageSharp.Processors.ImageFilteringProcessor{TColor, TPacked}" />
     public class FillShapeProcessor<TColor, TPacked> : ImageFilteringProcessor<TColor, TPacked>
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
@@ -23,6 +29,11 @@ namespace ImageSharp.Drawing.Processors
         private readonly IBrush<TColor, TPacked> fillColor;
         private readonly IShape poly;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FillShapeProcessor{TColor, TPacked}"/> class.
+        /// </summary>
+        /// <param name="brush">The brush.</param>
+        /// <param name="shape">The shape.</param>
         public FillShapeProcessor(IBrush<TColor, TPacked> brush, IShape shape)
         {
             this.poly = shape;
@@ -30,7 +41,7 @@ namespace ImageSharp.Drawing.Processors
             this.ParallelOptions.MaxDegreeOfParallelism = 1;
         }
 
-        protected float Opacity(float distance)
+        private float Opacity(float distance)
         {
             if (distance <= 0)
             {
@@ -43,6 +54,7 @@ namespace ImageSharp.Drawing.Processors
             return 0;
         }
 
+        /// <inheritdoc/>
         protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
             var rect = RectangleF.Ceiling(poly.Bounds); //rounds the points out away from the center

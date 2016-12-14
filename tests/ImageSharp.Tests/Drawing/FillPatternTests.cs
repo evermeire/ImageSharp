@@ -64,7 +64,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithPercent10()
         {
-            Test("Percent10", Color.Blue, PatternBrush.Percent10(Color.HotPink, Color.LimeGreen), new Color[,] {
+            Test("Percent10", Color.Blue, Brushes.Percent10(Color.HotPink, Color.LimeGreen), new Color[,] {
                 { Color.HotPink , Color.LimeGreen, Color.LimeGreen, Color.LimeGreen},
                 { Color.LimeGreen, Color.LimeGreen, Color.LimeGreen, Color.LimeGreen},
                 { Color.LimeGreen, Color.LimeGreen, Color.HotPink , Color.LimeGreen},
@@ -75,7 +75,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithPercent10Transparent()
         {
-            Test("Percent10_Transparent", Color.Blue, PatternBrush.Percent10(Color.HotPink), 
+            Test("Percent10_Transparent", Color.Blue, Brushes.Percent10(Color.HotPink), 
             new Color[,] {
                 { Color.HotPink , Color.Blue, Color.Blue, Color.Blue},
                 { Color.Blue, Color.Blue, Color.Blue, Color.Blue},
@@ -87,7 +87,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithPercent20()
         {
-            Test("Percent20", Color.Blue, PatternBrush.Percent20(Color.HotPink, Color.LimeGreen),
+            Test("Percent20", Color.Blue, Brushes.Percent20(Color.HotPink, Color.LimeGreen),
            new Color[,] {
                 { Color.HotPink , Color.LimeGreen, Color.LimeGreen, Color.LimeGreen},
                 { Color.LimeGreen, Color.LimeGreen, Color.HotPink , Color.LimeGreen},
@@ -99,7 +99,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithPercent20_transparent()
         {
-            Test("Percent20_Transparent", Color.Blue, PatternBrush.Percent20(Color.HotPink),
+            Test("Percent20_Transparent", Color.Blue, Brushes.Percent20(Color.HotPink),
            new Color[,] {
                 { Color.HotPink , Color.Blue, Color.Blue, Color.Blue},
                 { Color.Blue, Color.Blue, Color.HotPink , Color.Blue},
@@ -111,7 +111,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithHorizontal()
         {
-            Test("Horizontal", Color.Blue, PatternBrush.Horizontal(Color.HotPink, Color.LimeGreen),
+            Test("Horizontal", Color.Blue, Brushes.Horizontal(Color.HotPink, Color.LimeGreen),
            new Color[,] {
                 { Color.LimeGreen , Color.LimeGreen, Color.LimeGreen, Color.LimeGreen},
                 { Color.HotPink, Color.HotPink, Color.HotPink , Color.HotPink},
@@ -123,7 +123,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithHorizontal_transparent()
         {
-            Test("Horizontal_Transparent", Color.Blue, PatternBrush.Horizontal(Color.HotPink),
+            Test("Horizontal_Transparent", Color.Blue, Brushes.Horizontal(Color.HotPink),
            new Color[,] {
                 { Color.Blue , Color.Blue, Color.Blue, Color.Blue},
                 { Color.HotPink, Color.HotPink, Color.HotPink , Color.HotPink},
@@ -137,7 +137,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithMin()
         {
-            Test("Min", Color.Blue, PatternBrush.Min(Color.HotPink, Color.LimeGreen),
+            Test("Min", Color.Blue, Brushes.Min(Color.HotPink, Color.LimeGreen),
            new Color[,] {
                 { Color.LimeGreen , Color.LimeGreen, Color.LimeGreen, Color.LimeGreen},
                 { Color.LimeGreen , Color.LimeGreen, Color.LimeGreen, Color.LimeGreen},
@@ -149,7 +149,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithMin_transparent()
         {
-            Test("Min_Transparent", Color.Blue, PatternBrush.Min(Color.HotPink),
+            Test("Min_Transparent", Color.Blue, Brushes.Min(Color.HotPink),
            new Color[,] {
                 { Color.Blue , Color.Blue, Color.Blue, Color.Blue},
                 { Color.Blue , Color.Blue, Color.Blue, Color.Blue},
@@ -161,7 +161,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithVertical()
         {
-            Test("Vertical", Color.Blue, PatternBrush.Vertical(Color.HotPink, Color.LimeGreen),
+            Test("Vertical", Color.Blue, Brushes.Vertical(Color.HotPink, Color.LimeGreen),
            new Color[,] {
                 { Color.LimeGreen, Color.HotPink, Color.LimeGreen, Color.LimeGreen},
                 { Color.LimeGreen, Color.HotPink, Color.LimeGreen, Color.LimeGreen},
@@ -173,7 +173,7 @@ namespace ImageSharp.Tests.Drawing
         [Fact]
         public void ImageShouldBeFloodFilledWithVertical_transparent()
         {
-            Test("Vertical_Transparent", Color.Blue, PatternBrush.Vertical(Color.HotPink),
+            Test("Vertical_Transparent", Color.Blue, Brushes.Vertical(Color.HotPink),
            new Color[,] {
                 { Color.Blue, Color.HotPink, Color.Blue, Color.Blue},
                 { Color.Blue, Color.HotPink, Color.Blue, Color.Blue},
@@ -183,9 +183,9 @@ namespace ImageSharp.Tests.Drawing
         }
 
         [Fact]
-        public void ImageShouldBeFloodFilledWithForwardDiagnal()
+        public void ImageShouldBeFloodFilledWithForwardDiagonal()
         {
-            Test("ForwardDiagnal", Color.Blue, PatternBrush.ForwardDiagnal(Color.HotPink, Color.LimeGreen),
+            Test("ForwardDiagonal", Color.Blue, Brushes.ForwardDiagonal(Color.HotPink, Color.LimeGreen),
            new Color[,] {
                 { Color.HotPink, Color.LimeGreen, Color.LimeGreen, Color.LimeGreen},
                 { Color.LimeGreen, Color.HotPink, Color.LimeGreen, Color.LimeGreen},
@@ -195,9 +195,9 @@ namespace ImageSharp.Tests.Drawing
         }
 
         [Fact]
-        public void ImageShouldBeFloodFilledWithForwardDiagnal_transparent()
+        public void ImageShouldBeFloodFilledWithForwardDiagonal_transparent()
         {
-            Test("ForwardDiagnal_Transparent", Color.Blue, PatternBrush.ForwardDiagnal(Color.HotPink),
+            Test("ForwardDiagonal_Transparent", Color.Blue, Brushes.ForwardDiagonal(Color.HotPink),
            new Color[,] {
                 { Color.HotPink, Color.Blue,    Color.Blue,    Color.Blue},
                 { Color.Blue,    Color.HotPink, Color.Blue,    Color.Blue},
@@ -207,9 +207,9 @@ namespace ImageSharp.Tests.Drawing
         }
 
         [Fact]
-        public void ImageShouldBeFloodFilledWithBackwardDiagnal()
+        public void ImageShouldBeFloodFilledWithBackwardDiagonal()
         {
-            Test("BackwardDiagnal", Color.Blue, PatternBrush.BackwardDiagnal(Color.HotPink, Color.LimeGreen),
+            Test("BackwardDiagonal", Color.Blue, Brushes.BackwardDiagonal(Color.HotPink, Color.LimeGreen),
            new Color[,] {
                 { Color.LimeGreen, Color.LimeGreen, Color.LimeGreen, Color.HotPink},
                 { Color.LimeGreen, Color.LimeGreen, Color.HotPink, Color.LimeGreen},
@@ -219,9 +219,9 @@ namespace ImageSharp.Tests.Drawing
         }
 
         [Fact]
-        public void ImageShouldBeFloodFilledWithBackwardDiagnal_transparent()
+        public void ImageShouldBeFloodFilledWithBackwardDiagonal_transparent()
         {
-            Test("BackwardDiagnal_Transparent", Color.Blue, PatternBrush.BackwardDiagnal(Color.HotPink),
+            Test("BackwardDiagonal_Transparent", Color.Blue, Brushes.BackwardDiagonal(Color.HotPink),
            new Color[,] {
                 { Color.Blue, Color.Blue,    Color.Blue,    Color.HotPink},
                 { Color.Blue,    Color.Blue, Color.HotPink,    Color.Blue},

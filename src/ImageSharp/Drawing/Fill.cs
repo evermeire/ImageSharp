@@ -1,4 +1,4 @@
-﻿// <copyright file="Draw.cs" company="James Jackson-South">
+﻿// <copyright file="Fill.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -92,7 +92,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            //using Polygon directly instead of LinearPolygon as its will have less inderection
+            //using Polygon directly instead of LinearPolygon as its will have less indirection
             return source.Fill(brush, new Polygon(new LinearLineSegment(points)));
         }
 
@@ -109,7 +109,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            //using Polygon directly instead of LinearPolygon as its will have less inderection
+            //using Polygon directly instead of LinearPolygon as its will have less indirection
             return source.Fill(new SolidBrush<TColor, TPacked>(color), new Polygon(new LinearLineSegment(points)));
         }
 
@@ -126,7 +126,7 @@ namespace ImageSharp
          where TColor : struct, IPackedPixel<TPacked>
          where TPacked : struct
         {
-            //using Polygon directly instead of LinearPolygon as its will have less inderection
+            //using Polygon directly instead of LinearPolygon as its will have less indirection
             return source.Fill(brush, new Polygon(new LinearLineSegment(points)));
         }
 
@@ -143,7 +143,7 @@ namespace ImageSharp
          where TColor : struct, IPackedPixel<TPacked>
          where TPacked : struct
         {
-            //using Polygon directly instead of LinearPolygon as its will have less inderection
+            //using Polygon directly instead of LinearPolygon as its will have less indirection
             return source.Fill(new SolidBrush<TColor, TPacked>(color), new Polygon(new LinearLineSegment(points)));
         }
     }

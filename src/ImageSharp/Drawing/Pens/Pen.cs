@@ -1,17 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Numerics;
-using ImageSharp.Drawing.Brushes;
-using ImageSharp.Drawing.Pens.Processors;
-using ImageSharp.Drawing.Processors;
-using ImageSharp.Drawing.Paths;
+﻿// <copyright file="IPen.cs" company="James Jackson-South">
+// Copyright (c) James Jackson-South and contributors.
+// Licensed under the Apache License, Version 2.0.
+// </copyright>
+
+
 
 namespace ImageSharp.Drawing.Pens
 {
+    using System;
+    using System.Numerics;
+    using Brushes;
+    using Processors;
+    using Drawing.Processors;
+    using Paths;
+
     /// <summary>
-    /// 
+    /// Represenets a <see cref="Pen{TColor, TPacked}"/> in the <see cref="Color"/> color space.
     /// </summary>
-    /// <seealso cref="ImageSharp.Drawing.Pen{ImageSharp.Color, System.UInt32}" />
     public partial class Pen : Pen<Color, uint>
     {
         /// <summary>
@@ -27,15 +32,7 @@ namespace ImageSharp.Drawing.Pens
         /// <param name="brush">The brush.</param>
         /// <param name="width">The width.</param>
         public Pen(IBrush<Color, uint> brush, float width) : base(brush, width) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Pen"/> class.
-        /// </summary>
-        /// <param name="color">The color.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="pattern">The pattern.</param>
-        public Pen(Color color, float width, float[] pattern) : base(color, width, pattern) { }
-
+                
         /// <summary>
         /// Initializes a new instance of the <see cref="Pen"/> class.
         /// </summary>
@@ -43,6 +40,8 @@ namespace ImageSharp.Drawing.Pens
         /// <param name="width">The width.</param>
         /// <param name="pattern">The pattern.</param>
         public Pen(IBrush<Color, uint> brush, float width, float[] pattern) : base(brush, width, pattern) { }
+
+        internal Pen(Pen<Color, uint> pen) : base(pen) { }
     }
 
     /// <summary>
@@ -59,7 +58,7 @@ namespace ImageSharp.Drawing.Pens
     /// section 3 will be width/2 long and will be filled
     /// the the pattern will imidiatly repeat without gap.
     /// </remarks>
-    public class Pen<TColor, TPacked> : IPen<TColor, TPacked>
+    public partial class Pen<TColor, TPacked> : IPen<TColor, TPacked>
             where TColor : struct, IPackedPixel<TPacked>
             where TPacked : struct
     {
@@ -109,6 +108,12 @@ namespace ImageSharp.Drawing.Pens
             :this(brush, width, emptyPattern)
         {
         }
+
+        internal Pen(Pen<TColor, TPacked> pen)
+           : this(pen.Brush, pen.Width, pen.pattern)
+        {
+        }
+
 
         /// <summary>
         /// Gets the brush.
@@ -167,7 +172,7 @@ namespace ImageSharp.Drawing.Pens
             public ColoredPointInfo<TColor, TPacked> GetColor(PointInfo info)
             {
                 var result = new ColoredPointInfo<TColor, TPacked>();
-                result.Color = brush.GetColor(info.Point);
+                result.Color = brush.GetColor(info.SearchPoint);
 
                 if (info.DistanceFromPath < halfWidth)
                 {
@@ -225,7 +230,7 @@ namespace ImageSharp.Drawing.Pens
 
 
                 //we can sepcial case this as a solid pen
-                infoResult.Color = brush.GetColor(info.Point);
+                infoResult.Color = brush.GetColor(info.SearchPoint);
 
                 float distanceWAway = 0;
 

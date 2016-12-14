@@ -58,7 +58,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(Pen.Dash(Color.HotPink, 5), new[] {
+                    .DrawLines(Pens.Dash(Color.HotPink, 5), new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)
@@ -78,7 +78,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(Pen.Dot(Color.HotPink, 5), new[] {
+                    .DrawLines(Pens.Dot(Color.HotPink, 5), new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)
@@ -97,7 +97,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(Pen.DashDot(Color.HotPink, 5), new[] {
+                    .DrawLines(Pens.DashDot(Color.HotPink, 5), new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)
@@ -117,7 +117,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawLines(Pen.DashDotDot(Color.HotPink, 5), new[] {
+                    .DrawLines(Pens.DashDotDot(Color.HotPink, 5), new[] {
                             new Point(10, 10),
                             new Point(200, 150),
                             new Point(50, 300)

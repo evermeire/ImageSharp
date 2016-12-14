@@ -1,4 +1,4 @@
-﻿// <copyright file="DrawProcessor.cs" company="James Jackson-South">
+﻿// <copyright file="DrawPathProcessor.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -16,7 +16,13 @@ namespace ImageSharp.Drawing.Processors
     using Shapes;
     using Pens;
 
-    internal class DrawPathProcessor<TColor, TPacked> : ImageFilteringProcessor<TColor, TPacked>
+    /// <summary>
+    /// Draws a path using the processor pipeline
+    /// </summary>
+    /// <typeparam name="TColor">The type of the color.</typeparam>
+    /// <typeparam name="TPacked">The type of the packed.</typeparam>
+    /// <seealso cref="ImageSharp.Processors.ImageFilteringProcessor{TColor, TPacked}" />
+    public class DrawPathProcessor<TColor, TPacked> : ImageFilteringProcessor<TColor, TPacked>
         where TColor : struct, IPackedPixel<TPacked>
         where TPacked : struct
     {
@@ -28,10 +34,20 @@ namespace ImageSharp.Drawing.Processors
         private readonly IPath[] paths;
         private readonly RectangleF region;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DrawPathProcessor{TColor, TPacked}"/> class.
+        /// </summary>
+        /// <param name="pen">The pen.</param>
+        /// <param name="shape">The shape.</param>
         public DrawPathProcessor(IPen<TColor, TPacked> pen, IShape shape)
             :this(pen, shape.ToArray())
         { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DrawPathProcessor{TColor, TPacked}"/> class.
+        /// </summary>
+        /// <param name="pen">The pen.</param>
+        /// <param name="paths">The paths.</param>
         public DrawPathProcessor(IPen<TColor, TPacked> pen, params IPath[] paths)
         {
             this.paths = paths;
@@ -52,7 +68,7 @@ namespace ImageSharp.Drawing.Processors
             }
         }
 
-        protected float Opacity(float distance)
+        private float Opacity(float distance)
         {
             if (distance <= 0)
             {
@@ -64,8 +80,9 @@ namespace ImageSharp.Drawing.Processors
             }
             return 0;
         }
-        
 
+
+        /// <inheritdoc/>
         protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
             var applicator = pen.CreateApplicator(region);

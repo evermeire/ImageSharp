@@ -1,31 +1,55 @@
-﻿using ImageSharp.Drawing.Paths;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Threading.Tasks;
+﻿// <copyright file="ComplexPolygon.cs" company="James Jackson-South">
+// Copyright (c) James Jackson-South and contributors.
+// Licensed under the Apache License, Version 2.0.
+// </copyright>
+
 
 namespace ImageSharp.Drawing.Shapes
 {
+    using ImageSharp.Drawing.Paths;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Numerics;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// Represents a complex polygon made up of one or more outline 
+    /// polygons and one or more holes to punch out of them.
+    /// </summary>
+    /// <seealso cref="ImageSharp.Drawing.Shapes.IShape" />
     public sealed class ComplexPolygon : IShape
     {
+        const float clipperScaleFactor = 100f;
+
         private IEnumerable<IShape> holes;
         private IEnumerable<IShape> outlines;
         IEnumerable<IPath> paths = null;
 
         bool pathsFixed = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComplexPolygon"/> class.
+        /// </summary>
+        /// <param name="outline">The outline.</param>
+        /// <param name="holes">The holes.</param>
         public ComplexPolygon(IShape outline, params IShape[] holes)
-            : this(outline, (IEnumerable<IShape>)holes)
+            : this(new[] { outline }, (IEnumerable<IShape>)holes)
         {
         }
 
-        public ComplexPolygon(IShape outline, IEnumerable<IShape> holes)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComplexPolygon"/> class.
+        /// </summary>
+        /// <param name="outlines">The outlines.</param>
+        /// <param name="holes">The holes.</param>
+        public ComplexPolygon(IEnumerable<IShape> outlines, IEnumerable<IShape> holes)
         {
-            Guard.NotNull(outline, nameof(outline));
+            Guard.NotNull(outlines, nameof(outlines));
+            Guard.MustBeGreaterThanOrEqualTo(outlines.Count(), 1, nameof(outlines));
 
-            FixAndSetShapes(outline, holes);
+            FixAndSetShapes(outlines, holes);
 
             var minX = outlines.Min(x => x.Bounds.Left);
             var maxX = outlines.Max(x => x.Bounds.Right);
@@ -35,7 +59,6 @@ namespace ImageSharp.Drawing.Shapes
             Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
 
-        const float clipperScaleFactor = 100f;
         private void AddPoints(ClipperLib.Clipper clipper, IShape shape, bool isHole)
         {
             foreach (var path in shape)
@@ -49,23 +72,24 @@ namespace ImageSharp.Drawing.Shapes
                     clipperPoints.Add(new ClipperLib.IntPoint((long)p.X, (long)p.Y));
                 }
                 clipper.AddPath(clipperPoints,
-                    isHole ? ClipperLib.PolyType.ptClip : ClipperLib.PolyType.ptSubject,
+                    (isHole ? ClipperLib.PolyType.ptClip : ClipperLib.PolyType.ptSubject),
                     path.IsClosed);
             }
         }
+
         private void AddPoints(ClipperLib.Clipper clipper, IEnumerable<IShape> shapes, bool isHole)
         {
-
             foreach (var shape in shapes)
             {
                 AddPoints(clipper, shape, isHole);
             }
         }
 
-        private void ExtractOutlines(ClipperLib.PolyNode tree, List<IShape>  outlines, List<IShape> holes)
+        private void ExtractOutlines(ClipperLib.PolyNode tree, List<Polygon>  outlines, List<Polygon> holes)
         {
             if (tree.Contour.Any())
             {
+                //convert the Clipper Contour from scaled ints back down to the origional size (this is going to be lossy but not significantly)
                 var polygon = new Polygon(new LinearLineSegment(tree.Contour.Select(x => new Vector2(x.X / clipperScaleFactor, x.Y / clipperScaleFactor)).ToArray()));
 
                 if (tree.IsHole)
@@ -83,27 +107,30 @@ namespace ImageSharp.Drawing.Shapes
                 ExtractOutlines(c, outlines, holes);
             }
         }
-        private void FixAndSetShapes(IShape outline, IEnumerable<IShape> holes)
+
+        private void FixAndSetShapes(IEnumerable<IShape> outlines, IEnumerable<IShape> holes)
         {
-            // TODO this needs fixing using clipper to simplify all the shapes to get the paths returned properly
             var clipper = new ClipperLib.Clipper();
 
-            AddPoints(clipper, outline, false);
+            //add the outlines and the holes to clipper, scaling up from the float source to the int based system clipper uses
+            AddPoints(clipper, outlines, false);
             AddPoints(clipper, holes, true);
 
             var tree = new ClipperLib.PolyTree();
             clipper.Execute(ClipperLib.ClipType.ctDifference, tree);
 
+            
+            List<Polygon> newOutlines = new List<Polygon>();
+            List<Polygon> newHoles = new List<Polygon>();
+            
             //convert the 'tree' back to paths
-            List<IShape> newOutlines = new List<IShape>();
-            List<IShape> newHoles = new List<IShape>();
-
             ExtractOutlines(tree, newOutlines, newHoles);
 
             this.outlines = newOutlines;
             this.holes = newHoles;
 
-            paths = newOutlines.SelectMany(x => x).Union(newHoles.SelectMany(x => x)).ToArray();
+            //extract the final list of paths out of the new polygons we just converted down to.
+            paths = newOutlines.Union(newHoles).ToArray();
         }
 
         public RectangleF Bounds { get; }
@@ -133,7 +160,13 @@ namespace ImageSharp.Drawing.Shapes
 
             return dist;
         }
-        
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// An enumerator that can be used to iterate through the collection.
+        /// </returns>
         public IEnumerator<IPath> GetEnumerator()
         {
             return paths.GetEnumerator();

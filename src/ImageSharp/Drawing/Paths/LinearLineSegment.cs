@@ -1,4 +1,4 @@
-﻿// <copyright file="IImageSampler.cs" company="James Jackson-South">
+﻿// <copyright file="LinearLineSegment.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -13,6 +13,10 @@ namespace ImageSharp.Drawing.Paths
     using System.Numerics;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Represents a seriese of control points that will be joined by staight lines
+    /// </summary>
+    /// <seealso cref="ImageSharp.Drawing.Paths.ILineSegment" />
     public class LinearLineSegment : ILineSegment
     {
         private Vector2[] points;

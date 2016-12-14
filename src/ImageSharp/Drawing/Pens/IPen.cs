@@ -1,4 +1,4 @@
-﻿// <copyright file="IImageSampler.cs" company="James Jackson-South">
+﻿// <copyright file="IPen.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -6,7 +6,7 @@
 namespace ImageSharp.Drawing.Pens
 {
     using System;
-    using Pens.Processors;
+    using Processors;
 
     /// <summary>
     /// interface preresenting a Pen

@@ -1,4 +1,4 @@
-﻿// <copyright file="IImageSampler.cs" company="James Jackson-South">
+﻿// <copyright file="BezierPolygon.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -15,7 +15,7 @@ namespace ImageSharp.Drawing.Shapes
     using System.Collections;
 
     /// <summary>
-    /// a <see cref="BezierPolygon"/> represents a contiguose bound region 
+    /// Represents a polygon made up exclusivly of a single close cubic Bezier curve.
     /// </summary>
     public sealed class BezierPolygon : IShape
     {

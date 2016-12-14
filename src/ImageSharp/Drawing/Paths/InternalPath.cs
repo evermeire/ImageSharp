@@ -1,4 +1,4 @@
-﻿// <copyright file="IImageSampler.cs" company="James Jackson-South">
+﻿// <copyright file="InternalPath.cs" company="James Jackson-South">
 // Copyright (c) James Jackson-South and contributors.
 // Licensed under the Apache License, Version 2.0.
 // </copyright>
@@ -177,7 +177,8 @@ namespace ImageSharp.Drawing.Paths
             {
                 DistanceAlongPath = distance[closestPoint] + Vector2.Distance(points[closestPoint], point),
                 DistanceFromPath = (float)Math.Sqrt(internalInfo.DistanceSquared),
-                Point = point
+                SearchPoint = point,
+                ClosestPointOnPath = new Vector2(internalInfo.x, internalInfo.y)
             };
         }
 

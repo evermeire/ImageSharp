@@ -132,7 +132,7 @@ namespace ImageSharp.Tests.Drawing
             {
                 image
                 .BackgroundColor(Color.Blue)
-                .DrawPolygon(Pen.Dash(Color.HotPink, 5), new ComplexPolygon(simplePath, hole1))
+                .DrawPolygon(Pens.Dash(Color.HotPink, 5), new ComplexPolygon(simplePath, hole1))
                 .Save(output);
             }
         }
