@@ -184,7 +184,7 @@ namespace ImageSharp.Drawing.Pens
                 this.width = (int)Math.Ceiling(width);
             }
 
-            public int DrawingPadding => width;
+            public int DrawingPadding => this.width;
 
             public void Dispose()
             {
@@ -231,10 +231,9 @@ namespace ImageSharp.Drawing.Pens
                     this.totalLength += pattern[i] * width;
                     this.pattern[i + 1] = this.totalLength;
                 }
-                
             }
 
-            public int DrawingPadding => width;
+            public int DrawingPadding => this.width;
 
             public void Dispose()
             {

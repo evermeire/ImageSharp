@@ -6,6 +6,7 @@
 namespace ImageSharp.Drawing.Processors
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
@@ -15,7 +16,6 @@ namespace ImageSharp.Drawing.Processors
     using Pens;
     using Pens.Processors;
     using Shapes;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Draws a path using the processor pipeline
@@ -49,6 +49,7 @@ namespace ImageSharp.Drawing.Processors
             {
                 paths.AddRange(s);
             }
+
             return paths.ToArray();
         }
 
@@ -57,6 +58,7 @@ namespace ImageSharp.Drawing.Processors
         /// </summary>
         /// <param name="pen">The pen.</param>
         /// <param name="shape">The shape.</param>
+        /// <param name="position">The position.</param>
         /// <param name="options">The options.</param>
         public DrawPathProcessor(IPen<TColor, TPacked> pen, IShape shape, Vector2 position, GraphicsOptions options)
             : this(pen, Convert(shape), position, options)
@@ -67,7 +69,8 @@ namespace ImageSharp.Drawing.Processors
         /// Initializes a new instance of the <see cref="DrawPathProcessor{TColor, TPacked}" /> class.
         /// </summary>
         /// <param name="pen">The pen.</param>
-        /// <param name="shape">The shape.</param>
+        /// <param name="shapes">The shapes.</param>
+        /// <param name="position">The position.</param>
         /// <param name="options">The options.</param>
         public DrawPathProcessor(IPen<TColor, TPacked> pen, IShape[] shapes, Vector2 position, GraphicsOptions options)
             : this(pen, Convert(shapes), position, options)
@@ -90,6 +93,7 @@ namespace ImageSharp.Drawing.Processors
         /// </summary>
         /// <param name="pen">The pen.</param>
         /// <param name="paths">The paths.</param>
+        /// <param name="position">The position.</param>
         /// <param name="options">The options.</param>
         public DrawPathProcessor(IPen<TColor, TPacked> pen, IPath[] paths, Vector2 position, GraphicsOptions options)
         {
@@ -116,22 +120,19 @@ namespace ImageSharp.Drawing.Processors
         /// <inheritdoc/>
         protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
-
             using (IPenApplicator<TColor, TPacked> applicator = this.pen.CreateApplicator(this.region))
             {
+                foreach (IPath p in this.paths)
+                {
+                    RectangleF b = new RectangleF(p.Bounds.X + this.offset.X, p.Bounds.Y + this.offset.Y, p.Bounds.Width, p.Bounds.Height);
+                    Rectangle rect = RectangleF.Ceiling(b);
 
-                foreach (var p in this.paths) {
-
-                    var b = new RectangleF(p.Bounds.X + offset.X, p.Bounds.Y + offset.Y, p.Bounds.Width, p.Bounds.Height);
-                    var rect = RectangleF.Ceiling(b);
-                    
                     rect = Rectangle.Outset(rect, PaddingFactor + applicator.DrawingPadding);
-                    
+
                     int startY = rect.Y;
                     int endY = rect.Bottom;
                     int startX = rect.X;
                     int endX = rect.Right;
-
 
                     int minX = Math.Max(sourceRectangle.Left, startX);
                     int maxX = Math.Min(sourceRectangle.Right, endX);
@@ -171,7 +172,7 @@ namespace ImageSharp.Drawing.Processors
                                 currentPoint.X = offsetX;
                                 currentPoint.Y = offsetY;
 
-                                var dist = p.Distance(currentPoint - offset);
+                                var dist = p.Distance(currentPoint - this.offset);
 
                                 var color = applicator.GetColor(dist);
 

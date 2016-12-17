@@ -51,7 +51,7 @@ namespace ImageSharp
         /// <param name="text">The text.</param>
         /// <param name="position">The position.</param>
         /// <param name="font">The font.</param>
-        /// <param name="brush">The brush.</param>
+        /// <param name="color">The color.</param>
         /// <returns>
         /// The Image
         /// </returns>
@@ -62,7 +62,6 @@ namespace ImageSharp
             return source.DrawString(text, position, font, new SolidBrush<TColor, TPacked>(color));
         }
 
-
         /// <summary>
         /// Draws the outline of the polygon with the provided pen.
         /// </summary>
@@ -72,7 +71,7 @@ namespace ImageSharp
         /// <param name="text">The text.</param>
         /// <param name="position">The position.</param>
         /// <param name="font">The font.</param>
-        /// <param name="brush">The brush.</param>
+        /// <param name="pen">The pen.</param>
         /// <returns>
         /// The Image
         /// </returns>

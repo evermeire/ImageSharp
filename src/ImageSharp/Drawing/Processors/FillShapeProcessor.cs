@@ -6,12 +6,12 @@
 namespace ImageSharp.Drawing.Processors
 {
     using System;
+    using System.Linq;
     using System.Numerics;
     using System.Threading.Tasks;
     using Drawing;
     using ImageSharp.Processors;
     using Shapes;
-    using System.Linq;
 
     /// <summary>
     /// Usinf a brsuh and a shape fills shape with contents of brush the
@@ -33,10 +33,12 @@ namespace ImageSharp.Drawing.Processors
         private readonly Vector2 origon;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FillShapeProcessor{TColor, TPacked}"/> class.
+        /// Initializes a new instance of the <see cref="FillShapeProcessor{TColor, TPacked}" /> class.
         /// </summary>
         /// <param name="brush">The brush.</param>
-        /// <param name="shape">The shape.</param>
+        /// <param name="shapes">The shapes.</param>
+        /// <param name="origon">The origon.</param>
+        /// <param name="options">The options.</param>
         public FillShapeProcessor(IBrush<TColor, TPacked> brush, IShape[] shapes, Vector2 origon, GraphicsOptions options)
         {
             this.polys = shapes;
@@ -45,22 +47,24 @@ namespace ImageSharp.Drawing.Processors
             this.origon = origon;
         }
 
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="FillShapeProcessor{TColor, TPacked}"/> class.
+        /// Initializes a new instance of the <see cref="FillShapeProcessor{TColor, TPacked}" /> class.
         /// </summary>
         /// <param name="brush">The brush.</param>
         /// <param name="shape">The shape.</param>
+        /// <param name="origon">The origon.</param>
+        /// <param name="options">The options.</param>
         public FillShapeProcessor(IBrush<TColor, TPacked> brush, IShape shape, Vector2 origon, GraphicsOptions options)
-            : this(brush, new[] { shape }, origon, options )
+            : this(brush, new[] { shape }, origon, options)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FillShapeProcessor{TColor, TPacked}"/> class.
+        /// Initializes a new instance of the <see cref="FillShapeProcessor{TColor, TPacked}" /> class.
         /// </summary>
         /// <param name="brush">The brush.</param>
         /// <param name="shape">The shape.</param>
+        /// <param name="options">The options.</param>
         public FillShapeProcessor(IBrush<TColor, TPacked> brush, IShape shape, GraphicsOptions options)
             : this(brush, shape, Vector2.Zero, options)
         {
@@ -70,9 +74,9 @@ namespace ImageSharp.Drawing.Processors
         protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
             RectangleF fillBounds;
-            if (polys.Length == 1)
+            if (this.polys.Length == 1)
             {
-                fillBounds = polys[0].Bounds;
+                fillBounds = this.polys[0].Bounds;
             }
             else
             {
@@ -84,7 +88,7 @@ namespace ImageSharp.Drawing.Processors
                 fillBounds = new RectangleF(polysminX, polysminY, polysmaxX - polysminX, polysmaxY - polysminY);
             }
 
-            fillBounds = new RectangleF(fillBounds.X + origon.X, fillBounds.Y + origon.Y, fillBounds.Width, fillBounds.Height);
+            fillBounds = new RectangleF(fillBounds.X + this.origon.X, fillBounds.Y + this.origon.Y, fillBounds.Width, fillBounds.Height);
 
             var fillRect = RectangleF.Ceiling(fillBounds); // rounds the points out away from the center
 
@@ -93,10 +97,10 @@ namespace ImageSharp.Drawing.Processors
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
             using (IBrushApplicator<TColor, TPacked> applicator = this.fillColor.CreateApplicator(fillRect))
             {
-                foreach (var poly in polys)
+                foreach (var poly in this.polys)
                 {
                     var bounds = poly.Bounds;
-                    bounds = new RectangleF(bounds.X + origon.X, bounds.Y + origon.Y, bounds.Width, bounds.Height);
+                    bounds = new RectangleF(bounds.X + this.origon.X, bounds.Y + this.origon.Y, bounds.Width, bounds.Height);
                     var rect = RectangleF.Ceiling(bounds); // rounds the points out away from the center
 
                     rect = Rectangle.Outset(rect, DrawPadding);
@@ -137,14 +141,13 @@ namespace ImageSharp.Drawing.Processors
                         int offsetY = y - startY;
 
                         Vector2 currentPoint = default(Vector2);
-                        Vector2 currentPointOffset = default(Vector2);
                         for (int x = minX; x < maxX; x++)
                         {
                             int offsetX = x - startX;
                             currentPoint.X = offsetX;
                             currentPoint.Y = offsetY;
 
-                            var dist = poly.Distance(currentPoint - origon);
+                            var dist = poly.Distance(currentPoint - this.origon);
 
                             var opacity = this.Opacity(dist);
 
