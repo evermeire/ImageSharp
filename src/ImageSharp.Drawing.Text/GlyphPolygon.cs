@@ -58,12 +58,12 @@ namespace ImageSharp.Drawing
 
         public IEnumerator<IPath> GetEnumerator()
         {
-            return (IEnumerator<IPath>)this.polygons.GetEnumerator();
+            return ((IEnumerable<IPath>)this.polygons).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator<IPath>)this.polygons.GetEnumerator();
+            return this.polygons.GetEnumerator();
         }
     }
 }

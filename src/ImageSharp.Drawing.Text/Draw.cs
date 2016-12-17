@@ -36,7 +36,7 @@ namespace ImageSharp
            where TPacked : struct
         {
             var shapes = font.GenerateContours(text);
-            
+
             source.Process(new FillShapeProcessor<TColor, TPacked>(brush, shapes, position, GraphicsOptions.Default));
 
             return source;
@@ -60,6 +60,31 @@ namespace ImageSharp
            where TPacked : struct
         {
             return source.DrawString(text, position, font, new SolidBrush<TColor, TPacked>(color));
+        }
+
+
+        /// <summary>
+        /// Draws the outline of the polygon with the provided pen.
+        /// </summary>
+        /// <typeparam name="TColor">The type of the color.</typeparam>
+        /// <typeparam name="TPacked">The type of the packed.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="font">The font.</param>
+        /// <param name="brush">The brush.</param>
+        /// <returns>
+        /// The Image
+        /// </returns>
+        public static Image<TColor, TPacked> DrawString<TColor, TPacked>(this Image<TColor, TPacked> source, string text, Vector2 position, Font font, IPen<TColor, TPacked> pen)
+           where TColor : struct, IPackedPixel<TPacked>
+           where TPacked : struct
+        {
+            var shapes = font.GenerateContours(text);
+
+            source.Process(new DrawPathProcessor<TColor, TPacked>(pen, shapes, position, GraphicsOptions.Default));
+
+            return source;
         }
     }
 }

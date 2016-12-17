@@ -14,6 +14,7 @@ namespace ImageSharp.Tests.Drawing
     using System.IO;
     using System.Numerics;
     using Xunit;
+    using ImageSharp.Drawing.Pens;
 
     public class DrawStringTests : FileTestBase
     {
@@ -44,6 +45,35 @@ namespace ImageSharp.Tests.Drawing
             //}
 
         }
+
+        [Fact]
+        public void ImageShouldBeOverlayedByTextoOutline()
+        {
+            string path = CreateOutputDirectory("Drawing", "String");
+            var image = new Image(400, 150);
+
+            var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
+            var font = fontFile.CreateFont();
+            font.Size = 40;
+            using (FileStream output = File.OpenWrite($"{path}/Outline.png"))
+            {
+                image
+                    .BackgroundColor(Color.Blue)
+                    .DrawString("Hello World", new Vector2(10, 10), font, new Pen(Color.HotPink, 1))
+                    .Save(output);
+            }
+
+            //using (var sourcePixels = image.Lock())
+            //{
+            //    Assert.Equal(Color.HotPink, sourcePixels[9, 9]);
+
+            //    Assert.Equal(Color.HotPink, sourcePixels[199, 149]);
+
+            //    Assert.Equal(Color.Blue, sourcePixels[50, 50]);
+            //}
+
+        }
+
         [Fact]
         public void ImageShouldBeOverlayedByLetterO()
         {
