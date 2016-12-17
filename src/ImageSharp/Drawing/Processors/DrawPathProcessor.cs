@@ -27,7 +27,7 @@ namespace ImageSharp.Drawing.Processors
         where TPacked : struct, IEquatable<TPacked>
     {
         private const float AntialiasFactor = 1f;
-        private const int PaddingFactor = 1; // needs to been the same or greater than AntialiasFactor
+        private const int PaddingFactor = 2; // needs to be greater than AntialiasFactor
         private const float Epsilon = 0.001f;
 
         private readonly IPen<TColor, TPacked> pen;
@@ -91,15 +91,19 @@ namespace ImageSharp.Drawing.Processors
             {
                 var rect = RectangleF.Ceiling(applicator.RequiredRegion);
 
-                int polyStartY = rect.Y - PaddingFactor;
-                int polyEndY = rect.Bottom + PaddingFactor;
-                int startX = rect.X - PaddingFactor;
-                int endX = rect.Right + PaddingFactor;
+                rect = Rectangle.Outset(rect, PaddingFactor);
+
+
+                int startY = rect.Y;
+                int endY = rect.Bottom;
+                int startX = rect.X;
+                int endX = rect.Right;
+
 
                 int minX = Math.Max(sourceRectangle.Left, startX);
                 int maxX = Math.Min(sourceRectangle.Right, endX);
-                int minY = Math.Max(sourceRectangle.Top, polyStartY);
-                int maxY = Math.Min(sourceRectangle.Bottom, polyEndY);
+                int minY = Math.Max(sourceRectangle.Top, startY);
+                int maxY = Math.Min(sourceRectangle.Bottom, endY);
 
                 // Align start/end positions.
                 minX = Math.Max(0, minX);
@@ -115,7 +119,7 @@ namespace ImageSharp.Drawing.Processors
 
                 if (minY > 0)
                 {
-                    polyStartY = 0;
+                    startY = 0;
                 }
 
                 using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
@@ -126,7 +130,7 @@ namespace ImageSharp.Drawing.Processors
                     this.ParallelOptions,
                     y =>
                     {
-                        int offsetY = y - polyStartY;
+                        int offsetY = y - startY;
                         var currentPoint = default(Vector2);
                         for (int x = minX; x < maxX; x++)
                         {

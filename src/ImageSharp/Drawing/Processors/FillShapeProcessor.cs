@@ -25,7 +25,7 @@ namespace ImageSharp.Drawing.Processors
         private const float Epsilon = 0.001f;
 
         private const float AntialiasFactor = 1f;
-        private const int DrawPadding = 1;
+        private const int DrawPadding = 2;
         private readonly IBrush<TColor, TPacked> fillColor;
         private readonly IShape poly;
         private readonly GraphicsOptions options;
@@ -47,16 +47,18 @@ namespace ImageSharp.Drawing.Processors
         protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
             var rect = RectangleF.Ceiling(this.poly.Bounds); // rounds the points out away from the center
-
-            int polyStartY = rect.Y - DrawPadding;
-            int polyEndY = rect.Bottom + DrawPadding;
-            int startX = rect.X - DrawPadding;
-            int endX = rect.Right + DrawPadding;
+            
+            rect = Rectangle.Outset(rect, DrawPadding);
+            
+            int startY = rect.Y;
+            int endY = rect.Bottom;
+            int startX = rect.X;
+            int endX = rect.Right;
 
             int minX = Math.Max(sourceRectangle.Left, startX);
             int maxX = Math.Min(sourceRectangle.Right, endX);
-            int minY = Math.Max(sourceRectangle.Top, polyStartY);
-            int maxY = Math.Min(sourceRectangle.Bottom, polyEndY);
+            int minY = Math.Max(sourceRectangle.Top, startY);
+            int maxY = Math.Min(sourceRectangle.Bottom, endY);
 
             // Align start/end positions.
             minX = Math.Max(0, minX);
@@ -72,7 +74,7 @@ namespace ImageSharp.Drawing.Processors
 
             if (minY > 0)
             {
-                polyStartY = 0;
+                startY = 0;
             }
 
             using (PixelAccessor<TColor, TPacked> sourcePixels = source.Lock())
@@ -84,7 +86,7 @@ namespace ImageSharp.Drawing.Processors
                 this.ParallelOptions,
                 y =>
                 {
-                    int offsetY = y - polyStartY;
+                    int offsetY = y - startY;
 
                     Vector2 currentPoint = default(Vector2);
                     Vector2 currentPointOffset = default(Vector2);

@@ -21,7 +21,7 @@ namespace ImageSharp.Tests.Drawing
         public void ImageShouldBeOverlayedByText()
         {
             string path = CreateOutputDirectory("Drawing", "String");
-            var image = new Image(500, 500);
+            var image = new Image(400, 150);
 
             var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
             var font = fontFile.CreateFont();
@@ -45,10 +45,37 @@ namespace ImageSharp.Tests.Drawing
 
         }
         [Fact]
+        public void ImageShouldBeOverlayedByLetterO()
+        {
+            string path = CreateOutputDirectory("Drawing", "String");
+            var image = new Image(400, 150);
+
+            var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
+            var font = fontFile.CreateFont();
+            font.Size = 40;
+            using (FileStream output = File.OpenWrite($"{path}/LetterO.png"))
+            {
+                image
+                    .BackgroundColor(Color.Blue)
+                    .DrawString("o", new Vector2(10, 10), font, Color.HotPink)
+                    .Save(output);
+            }
+
+            //using (var sourcePixels = image.Lock())
+            //{
+            //    Assert.Equal(Color.HotPink, sourcePixels[9, 9]);
+
+            //    Assert.Equal(Color.HotPink, sourcePixels[199, 149]);
+
+            //    Assert.Equal(Color.Blue, sourcePixels[50, 50]);
+            //}
+
+        }
+        [Fact]
         public void ImageShouldBeOverlayedByTextNewLine()
         {
             string path = CreateOutputDirectory("Drawing", "String");
-            var image = new Image(500, 500);
+            var image = new Image(400, 150);
 
             var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
             var font = fontFile.CreateFont();
@@ -76,7 +103,7 @@ namespace ImageSharp.Tests.Drawing
         public void ImageShouldBeOverlayedByTextNewLineAndWithTab()
         {
             string path = CreateOutputDirectory("Drawing", "String");
-            var image = new Image(500, 500);
+            var image = new Image(400, 150);
 
             var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
             var font = fontFile.CreateFont();
