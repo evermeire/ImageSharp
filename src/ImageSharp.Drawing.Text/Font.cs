@@ -69,14 +69,14 @@ namespace ImageSharp.Drawing
         /// </value>
         public bool EnableKerning { get; set; } = true;
 
-        public IShape[] GenerateShapes(string str, Vector2 origin)
+        public GlyphPolygon[] GenerateContours(string str)
         {
-
+            Vector2 origin = Vector2.Zero;
+                
             // TODO add support for clipping (complex polygons should help here)
             // TODO add support for wrapping (line heights)
-
-            var initialX = origin.X; // store this for line changes
-            var glyphs = new IShape[str.Length];
+            
+            var glyphs = new List<GlyphPolygon>();
             
             var glyphPathBuilder = new GlyphPathBuilderPolygons(typeface);
 
@@ -101,7 +101,7 @@ namespace ImageSharp.Drawing
                 {
                     case '\n':
                         origin.Y += finalLineHeight;
-                        origin.X = initialX;
+                        origin.X = 0;
                         startOfLine = true;
                         break;
                     case '\r':
@@ -117,7 +117,11 @@ namespace ImageSharp.Drawing
                         break;
                     default:
                         var glyIndex = (ushort)typeface.LookupIndex(c);
-                        glyphs[i] = glyphPathBuilder.BuildGlyph(glyIndex, Size, origin);
+                        var glyph = glyphPathBuilder.BuildGlyph(glyIndex, Size, scale, origin);
+                        if (glyph != null)
+                        {
+                            glyphs.Add(glyph);
+                        }
 
                         //this advWidth in font design unit 
                         float advWidth = typeface.GetAdvanceWidthFromGlyphIndex(glyIndex) * scale;
@@ -134,7 +138,7 @@ namespace ImageSharp.Drawing
                 }
             }
 
-            return glyphs;
+            return glyphs.ToArray();
         }
     }
 }

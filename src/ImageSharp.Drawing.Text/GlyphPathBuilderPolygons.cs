@@ -87,18 +87,16 @@ namespace ImageSharp.Drawing
             this.lastPoint = offset + (new Vector2(x, y) * scale);
         }
 
-        public IShape BuildGlyph(ushort idx, float sizeInPoints, Vector2 offset)
+        public GlyphPolygon BuildGlyph(ushort idx, float sizeInPoints, float scale, Vector2 offset)
         {
             this.offset = offset + new Vector2(0, sizeInPoints);
             
-
-           var scale = this.TypeFace.CalculateScale(sizeInPoints);
 
             this.scale = new Vector2(scale, -scale);
             BuildFromGlyphIndex(idx, sizeInPoints);
             if (polygons.Any())
             {
-                var result = new ComplexPolygon(polygons.ToArray());
+                var result = new GlyphPolygon(polygons.ToArray());
                 polygons.Clear();
 
                 return result;

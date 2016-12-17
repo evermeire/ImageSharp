@@ -35,14 +35,9 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct
         {
-            var shapes = font.GenerateShapes(text, position);
-            foreach (var s in shapes)
-            {
-                if (s != null) // spaces become a null shape
-                {
-                    source.Process(new FillShapeProcessor<TColor, TPacked>(brush, s, GraphicsOptions.Default));
-                }
-            }
+            var shapes = font.GenerateContours(text);
+            
+            source.Process(new FillShapeProcessor<TColor, TPacked>(brush, shapes, position, GraphicsOptions.Default));
 
             return source;
         }
