@@ -62,7 +62,7 @@ namespace ImageSharp.Benchmarks
         public void DrawLinesCore()
         {
             CoreImage image = new CoreImage(800, 800);
-            image.DrawString("Hello World", new Vector2(10, 10), coreFont, CoreColor.HotPink);
+            image.DrawString("Hello World", coreFont, CoreColor.HotPink, new Vector2(10, 10));
 
             using (MemoryStream ms = new MemoryStream())
             {
