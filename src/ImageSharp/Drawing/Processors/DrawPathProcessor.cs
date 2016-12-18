@@ -101,22 +101,6 @@ namespace ImageSharp.Drawing.Processors
             }
         }
 
-        private static IPath[] Convert(IShape shape)
-        {
-            return shape.ToArray();
-        }
-
-        private static IPath[] Convert(IShape[] shape)
-        {
-            List<IPath> paths = new List<Paths.IPath>();
-            foreach (var s in shape)
-            {
-                paths.AddRange(s);
-            }
-
-            return paths.ToArray();
-        }
-
         /// <inheritdoc/>
         protected override void OnApply(ImageBase<TColor, TPacked> source, Rectangle sourceRectangle)
         {
@@ -197,6 +181,22 @@ namespace ImageSharp.Drawing.Processors
                     }
                 }
             }
+        }
+
+        private static IPath[] Convert(IShape shape)
+        {
+            return shape.ToArray();
+        }
+
+        private static IPath[] Convert(IShape[] shape)
+        {
+            List<IPath> paths = new List<Paths.IPath>();
+            foreach (var s in shape)
+            {
+                paths.AddRange(s);
+            }
+
+            return paths.ToArray();
         }
 
         private PointInfo Closest(Vector2 point)

@@ -5,6 +5,7 @@
 
 namespace ImageSharp
 {
+    using System;
     using System.Numerics;
     using Drawing;
     using Drawing.Brushes;
@@ -33,7 +34,7 @@ namespace ImageSharp
         /// </returns>
         public static Image<TColor, TPacked> DrawString<TColor, TPacked>(this Image<TColor, TPacked> source, string text, Vector2 position, Font font, IBrush<TColor, TPacked> brush)
            where TColor : struct, IPackedPixel<TPacked>
-           where TPacked : struct
+           where TPacked : struct, IEquatable<TPacked>
         {
             var shapes = font.GenerateContours(text);
 
@@ -57,7 +58,7 @@ namespace ImageSharp
         /// </returns>
         public static Image<TColor, TPacked> DrawString<TColor, TPacked>(this Image<TColor, TPacked> source, string text, Vector2 position, Font font, TColor color)
            where TColor : struct, IPackedPixel<TPacked>
-           where TPacked : struct
+           where TPacked : struct, IEquatable<TPacked>
         {
             return source.DrawString(text, position, font, new SolidBrush<TColor, TPacked>(color));
         }
@@ -77,7 +78,7 @@ namespace ImageSharp
         /// </returns>
         public static Image<TColor, TPacked> DrawString<TColor, TPacked>(this Image<TColor, TPacked> source, string text, Vector2 position, Font font, IPen<TColor, TPacked> pen)
            where TColor : struct, IPackedPixel<TPacked>
-           where TPacked : struct
+           where TPacked : struct, IEquatable<TPacked>
         {
             var shapes = font.GenerateContours(text);
 
