@@ -126,6 +126,7 @@ namespace ImageSharp.Drawing
 
             var spaceIndex = (ushort)this.typeface.LookupIndex(' ');
             var spaceWidth = this.typeface.GetAdvanceWidthFromGlyphIndex(spaceIndex) * scale;
+            var tabWidth = spaceWidth * font.TabWidth;
             Vector2 offset = Vector2.Zero;
             for (int i = 0; i < charCount; ++i)
             {
@@ -148,7 +149,16 @@ namespace ImageSharp.Drawing
                         prevIdx = spaceIndex;
                         break;
                     case '\t':
-                        offset.X += spaceWidth * font.TabWidth;
+                        var diff = offset.X % tabWidth;
+                        
+                        var newWidth = offset.X + diff; 
+                        if (newWidth == offset.X)
+                        {
+                            offset.X += tabWidth;
+                        }else
+                        {
+                            offset.X = newWidth;
+                        }
                         prevIdx = spaceIndex;
                         break;
                     default:
