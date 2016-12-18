@@ -64,13 +64,13 @@ namespace NOpenType.Tables
             //----------------------------------------------
 
             //check 
-#if DEBUG
-            if ((remainingBytes % 6) != 0)
-            {
-                throw new System.Exception();
-            }
-            int calNpairs = remainingBytes / 6;
-#endif
+//#if DEBUG
+//            if ((remainingBytes % 6) != 0)
+//            {
+//                throw new System.Exception();
+//            }
+//            int calNpairs = remainingBytes / 6;
+//#endif
             var ksubTable = new KerningSubTable(npairs);
             this.kernSubTables.Add(ksubTable);
 

@@ -22,11 +22,11 @@ namespace ImageSharp.Tests.Drawing
         public void ImageShouldBeOverlayedByText()
         {
             string path = CreateOutputDirectory("Drawing", "String");
-            var image = new Image(400, 150);
+            var image = new Image(400, 80);
 
-            var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
+            var fontFile = new TestFont(TestFonts.Ttf.OpenSans_Regular);
             var font = fontFile.CreateFont();
-            font.Size = 40;
+            font.Size = 50;
             using (FileStream output = File.OpenWrite($"{path}/Simple.png"))
             {
                 image
@@ -39,11 +39,11 @@ namespace ImageSharp.Tests.Drawing
         public void ImageShouldBeOverlayedByTextNoAntialiasing()
         {
             string path = CreateOutputDirectory("Drawing", "String");
-            var image = new Image(400, 150);
+            var image = new Image(400, 80);
 
-            var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
+            var fontFile = new TestFont(TestFonts.Ttf.OpenSans_Regular);
             var font = fontFile.CreateFont();
-            font.Size = 40;
+            font.Size = 50;
             using (FileStream output = File.OpenWrite($"{path}/NoAntialiasing.png"))
             {
                 image
@@ -54,19 +54,19 @@ namespace ImageSharp.Tests.Drawing
         }
 
         [Fact]
-        public void ImageShouldBeOverlayedByTextDottedOutline()
+        public void ImageShouldBeOverlayedByTextOutline()
         {
             string path = CreateOutputDirectory("Drawing", "String");
-            var image = new Image(400, 150);
+            var image = new Image(400, 80);
 
-            var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
+            var fontFile = new TestFont(TestFonts.Ttf.OpenSans_Regular);
             var font = fontFile.CreateFont();
-            font.Size = 40;
-            using (FileStream output = File.OpenWrite($"{path}/DOttedOutline.png"))
+            font.Size = 50;
+            using (FileStream output = File.OpenWrite($"{path}/Outline.png"))
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawString("Hello World", font, Pens.Dot(Color.HotPink, 1), new Vector2(10, 10))
+                    .DrawString("Hello World", font, Pens.Solid(Color.HotPink, 1), new Vector2(10, 10))
                     .Save(output);
             }
         }
@@ -77,9 +77,9 @@ namespace ImageSharp.Tests.Drawing
             string path = CreateOutputDirectory("Drawing", "String");
             var image = new Image(400, 150);
 
-            var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
+            var fontFile = new TestFont(TestFonts.Ttf.OpenSans_Regular);
             var font = fontFile.CreateFont();
-            font.Size = 40;
+            font.Size = 50;
             using (FileStream output = File.OpenWrite($"{path}/Newline.png"))
             {
                 image
@@ -93,16 +93,16 @@ namespace ImageSharp.Tests.Drawing
         public void ImageShouldBeOverlayedByTextNewLineAndWithTab()
         {
             string path = CreateOutputDirectory("Drawing", "String");
-            var image = new Image(400, 150);
+            var image = new Image(430, 180);
 
-            var fontFile = new TestFont(TestFonts.Ttf.Tahoma);
+            var fontFile = new TestFont(TestFonts.Ttf.OpenSans_Regular);
             var font = fontFile.CreateFont();
-            font.Size = 40;
+            font.Size = 50;
             using (FileStream output = File.OpenWrite($"{path}/WithTab.png"))
             {
                 image
                     .BackgroundColor(Color.Blue)
-                    .DrawString("Hello World\nHello\tWorld", font, Color.HotPink, new Vector2(10, 10))
+                    .DrawString("Helli\tWorld\nHello\tWorld", font, Color.HotPink, new Vector2(10, 10))
                     .Save(output);
             }
         }

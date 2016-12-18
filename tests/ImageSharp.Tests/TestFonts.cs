@@ -14,7 +14,7 @@ namespace ImageSharp.Tests
         {
             private static readonly string folder = "TestFonts/Formats/TTF/";
 
-            public static string Tahoma => folder + "tahoma.ttf";
+            public static string OpenSans_Regular => folder + "OpenSans-Regular.ttf";
         }
     }
 }

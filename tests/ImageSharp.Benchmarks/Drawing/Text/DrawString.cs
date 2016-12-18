@@ -29,10 +29,10 @@ namespace ImageSharp.Benchmarks
         public DrawStrings()
         {
             this.fontscollection = new System.Drawing.Text.PrivateFontCollection();
-            fontscollection.AddFontFile("TestFonts/Formats/TTF/tahoma.ttf");
+            fontscollection.AddFontFile("TestFonts/Formats/TTF/OpenSans-Regular.ttf");
             var familiy = fontscollection.Families[0];
             this.font = new System.Drawing.Font(familiy, 10);
-            using (var fs = File.OpenRead("TestFonts/Formats/TTF/tahoma.ttf"))
+            using (var fs = File.OpenRead("TestFonts/Formats/TTF/OpenSans-Regular.ttf"))
             {
                 this.coreFont = new CoreFont(fs);
             }
