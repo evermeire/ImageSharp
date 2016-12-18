@@ -30,5 +30,26 @@ namespace ImageSharp.Drawing.Shapes
         /// Returns the distance from the shape to the point
         /// </returns>
         float Distance(Vector2 point);
+
+        /// <summary>
+        /// Gets the maximum number intersections that a shape can have when testing a line.
+        /// </summary>
+        /// <value>
+        /// The maximum intersections.
+        /// </value>
+        int MaxIntersections { get; }
+
+        /// <summary>
+        /// Finds the intersections.
+        /// </summary>
+        /// <param name="start">The start point of the line.</param>
+        /// <param name="end">The end point of the line.</param>
+        /// <param name="buffer">The buffer that will be populated with intersections.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns>
+        /// The number of intersections populated into the buffer.
+        /// </returns>
+        int FindIntersections(Vector2 start, Vector2 end, Vector2[] buffer, int count, int offset);
     }
 }

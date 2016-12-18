@@ -34,6 +34,14 @@ namespace ImageSharp.Drawing.Shapes
         /// </value>
         public RectangleF Bounds => this.innerPolygon.Bounds;
 
+        public int MaxIntersections
+        {
+            get
+            {
+                return innerPolygon.MaxIntersections;
+            }
+        }
+
         /// <summary>
         /// the distance of the point from the outline of the shape, if the value is negative it is inside the polygon bounds
         /// </summary>
@@ -42,6 +50,11 @@ namespace ImageSharp.Drawing.Shapes
         /// Returns the distance from the shape to the point
         /// </returns>
         public float Distance(Vector2 point) => this.innerPolygon.Distance(point);
+
+        public int FindIntersections(Vector2 start, Vector2 end, Vector2[] buffer, int count, int offset)
+        {
+            return innerPolygon.FindIntersections(start, end, buffer, count, offset);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

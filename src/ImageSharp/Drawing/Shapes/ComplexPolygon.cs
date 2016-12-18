@@ -5,6 +5,7 @@
 
 namespace ImageSharp.Drawing.Shapes
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -43,7 +44,7 @@ namespace ImageSharp.Drawing.Shapes
             Guard.NotNull(outlines, nameof(outlines));
             Guard.MustBeGreaterThanOrEqualTo(outlines.Length, 1, nameof(outlines));
 
-            this.FixAndSetShapes(outlines, holes);
+            this.MaxIntersections = this.FixAndSetShapes(outlines, holes);
 
             var minX = this.shapes.Min(x => x.Bounds.Left);
             var maxX = this.shapes.Max(x => x.Bounds.Right);
@@ -60,6 +61,14 @@ namespace ImageSharp.Drawing.Shapes
         /// The bounds.
         /// </value>
         public RectangleF Bounds { get; }
+
+        /// <summary>
+        /// Gets the maximum number intersections that a shape can have when testing a line.
+        /// </summary>
+        /// <value>
+        /// The maximum intersections.
+        /// </value>
+        public int MaxIntersections { get; }
 
         /// <summary>
         /// the distance of the point from the outline of the shape, if the value is negative it is inside the polygon bounds
@@ -190,7 +199,7 @@ namespace ImageSharp.Drawing.Shapes
             return source.Bounds.Intersects(target.Bounds);
         }
 
-        private void FixAndSetShapes(IShape[] outlines, IShape[] holes)
+        private int FixAndSetShapes(IShape[] outlines, IShape[] holes)
         {
             // if any outline doesn't overlap another shape then we don't have to bother with sending them through clipper
             // as sending then though clipper will turn them into generic polygons and loose thier shape specific optimisations
@@ -274,6 +283,18 @@ namespace ImageSharp.Drawing.Shapes
             }
 
             this.paths = paths;
+
+            int intersections = 0;
+            foreach (var s in this.shapes)
+            {
+                intersections += s.MaxIntersections;
+            }
+            return intersections;
+        }
+
+        public int FindIntersections(Vector2 start, Vector2 end, Vector2[] buffer, int count, int offset)
+        {
+            throw new NotImplementedException();
         }
     }
 }

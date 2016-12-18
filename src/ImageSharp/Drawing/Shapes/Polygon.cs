@@ -5,6 +5,7 @@
 
 namespace ImageSharp.Drawing.Shapes
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Numerics;
@@ -62,6 +63,14 @@ namespace ImageSharp.Drawing.Shapes
         ///   <c>true</c> if this instance is closed; otherwise, <c>false</c>.
         /// </value>
         public bool IsClosed => true;
+
+        /// <summary>
+        /// Gets the maximum number intersections that a shape can have when testing a line.
+        /// </summary>
+        /// <value>
+        /// The maximum intersections.
+        /// </value>
+        public int MaxIntersections => this.innerPath.Points.Length;
 
         /// <summary>
         /// the distance of the point from the outline of the shape, if the value is negative it is inside the polygon bounds
@@ -126,6 +135,22 @@ namespace ImageSharp.Drawing.Shapes
         public Vector2[] AsSimpleLinearPath()
         {
             return this.innerPath.Points;
+        }
+
+        /// <summary>
+        /// Finds the intersections.
+        /// </summary>
+        /// <param name="start">The start point of the line.</param>
+        /// <param name="end">The end point of the line.</param>
+        /// <param name="buffer">The buffer that will be populated with intersections.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns>
+        /// The number of intersections populated into the buffer.
+        /// </returns>
+        public int FindIntersections(Vector2 start, Vector2 end, Vector2[] buffer, int count, int offset)
+        {
+            return this.innerPath.FindIntersections(start, end, buffer, count, offset);
         }
     }
 }
