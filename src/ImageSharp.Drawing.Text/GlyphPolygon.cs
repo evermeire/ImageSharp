@@ -23,12 +23,17 @@ namespace ImageSharp.Drawing
         private readonly Polygon[] polygons;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GlyphPolygon"/> class.
+        /// Initializes a new instance of the <see cref="GlyphPolygon" /> class.
         /// </summary>
+        /// <param name="character">The character.</param>
+        /// <param name="index">The index.</param>
         /// <param name="polygons">The polygons.</param>
-        public GlyphPolygon(Polygon[] polygons)
+        public GlyphPolygon(char character, ushort index, Polygon[] polygons)
         {
+            this.GlyphIndex = index;
+            this.Character = character;
             this.polygons = polygons;
+            this.IsEmpty = false;
 
             var minX = this.polygons.Min(x => x.Bounds.Left);
             var maxX = this.polygons.Max(x => x.Bounds.Right);
@@ -39,12 +44,59 @@ namespace ImageSharp.Drawing
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GlyphPolygon" /> class.
+        /// </summary>
+        /// <param name="character">The character.</param>
+        /// <param name="index">The index.</param>
+        public GlyphPolygon(char character, ushort index)
+        {
+            this.GlyphIndex = index;
+            this.Character = character;
+            this.IsEmpty = true;
+            this.Bounds = RectangleF.Empty;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GlyphPolygon" /> class.
+        /// </summary>
+        /// <param name="srcGlyph">The source glyph.</param>
+        /// <param name="offset">The offset.</param>
+        public GlyphPolygon(GlyphPolygon srcGlyph, Vector2 offset)
+            : this(srcGlyph.Character, srcGlyph.GlyphIndex, Translate(srcGlyph.polygons, offset))
+        {
+        }
+
+        /// <summary>
+        /// Gets the character this glyph represents
+        /// </summary>
+        /// <value>
+        /// The character.
+        /// </value>
+        public char Character { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsEmpty { get; }
+
+        /// <summary>
         /// Gets the bounding box of this shape.
         /// </summary>
         /// <value>
         /// The bounds.
         /// </value>
         public RectangleF Bounds { get; }
+
+        /// <summary>
+        /// Gets the index of the glyph within its typeface.
+        /// </summary>
+        /// <value>
+        /// The index of the glyph.
+        /// </value>
+        public ushort GlyphIndex { get; }
 
         /// <summary>
         /// the distance of the point from the outline of the shape, if the value is negative it is inside the polygon bounds
@@ -102,6 +154,18 @@ namespace ImageSharp.Drawing
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.polygons.GetEnumerator();
+        }
+
+        private static Polygon[] Translate(Polygon[] polygons, Vector2 offset)
+        {
+            var translatedPolygons = new Polygon[polygons.Length];
+            var len = polygons.Length;
+            for (var i = 0; i < len; i++)
+            {
+                translatedPolygons[i] = new Polygon(polygons[i], offset);
+            }
+
+            return translatedPolygons;
         }
     }
 }

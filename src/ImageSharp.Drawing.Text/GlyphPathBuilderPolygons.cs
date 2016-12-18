@@ -22,6 +22,8 @@ namespace ImageSharp.Drawing
     internal class GlyphPathBuilderPolygons : NOpenType.GlyphPathBuilderBase
     {
         private static readonly Vector2 TwoThirds = new Vector2(2f / 3f);
+        private object locker = new object();
+        private Dictionary<char, GlyphPolygon> glyphCache = new Dictionary<char, GlyphPolygon>();
         private List<Polygon> polygons = new List<Polygon>();
         private List<ILineSegment> segments = new List<ILineSegment>();
         private Vector2 lastPoint;
@@ -29,38 +31,58 @@ namespace ImageSharp.Drawing
         private Vector2 scale;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GlyphPathBuilderPolygons"/> class.
+        /// Initializes a new instance of the <see cref="GlyphPathBuilderPolygons" /> class.
         /// </summary>
         /// <param name="typeface">The typeface.</param>
-        public GlyphPathBuilderPolygons(Typeface typeface)
+        /// <param name="fontSize">Size of the font.</param>
+        public GlyphPathBuilderPolygons(Typeface typeface, float fontSize)
             : base(typeface)
         {
+            this.offset = new Vector2(0, fontSize);
+            var scaleFactor = typeface.CalculateScale(fontSize);
+            this.scale = new Vector2(scaleFactor, -scaleFactor);
         }
 
         /// <summary>
         /// Builds the glyph.
         /// </summary>
-        /// <param name="idx">The index.</param>
-        /// <param name="sizeInPoints">The size in points.</param>
-        /// <param name="scale">The scale.</param>
-        /// <param name="offset">The offset.</param>
-        /// <returns>Returns the polygon fro the request glyph scaled and offset</returns>
-        public GlyphPolygon BuildGlyph(ushort idx, float sizeInPoints, float scale, Vector2 offset)
+        /// <param name="character">The character.</param>
+        /// <returns>
+        /// Returns the polygon for the requested glyph
+        /// </returns>
+        public GlyphPolygon BuildGlyph(char character)
         {
-            this.offset = offset + new Vector2(0, sizeInPoints);
-
-            this.scale = new Vector2(scale, -scale);
-            this.BuildFromGlyphIndex(idx, sizeInPoints);
-            if (this.polygons.Any())
+            if (this.glyphCache.ContainsKey(character))
             {
-                var result = new GlyphPolygon(this.polygons.ToArray());
-                this.polygons.Clear();
-
-                return result;
+                return this.glyphCache[character];
             }
-            else
+
+            // building a glyph isn't thread safe because it uses a class wide state while building
+            lock (this.locker)
             {
-                return null;
+                if (this.glyphCache.ContainsKey(character))
+                {
+                    return this.glyphCache[character];
+                }
+
+                var glyIndex = (ushort)this.TypeFace.LookupIndex(character);
+
+                this.BuildFromGlyphIndex(glyIndex, 1);
+
+                GlyphPolygon result;
+                if (this.polygons.Any())
+                {
+                    result = new GlyphPolygon(character, glyIndex, this.polygons.ToArray());
+                    this.polygons.Clear();
+                }
+                else
+                {
+                    result = new GlyphPolygon(character, glyIndex);
+                    return null;
+                }
+
+                this.glyphCache.Add(character, result);
+                return result;
             }
         }
 

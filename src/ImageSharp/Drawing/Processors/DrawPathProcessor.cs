@@ -37,22 +37,6 @@ namespace ImageSharp.Drawing.Processors
         private readonly GraphicsOptions options;
         private readonly Vector2 offset;
 
-        private static IPath[] Convert(IShape shape)
-        {
-            return shape.ToArray();
-        }
-
-        private static IPath[] Convert(IShape[] shape)
-        {
-            List<IPath> paths = new List<Paths.IPath>();
-            foreach(var s in shape)
-            {
-                paths.AddRange(s);
-            }
-
-            return paths.ToArray();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DrawPathProcessor{TColor, TPacked}" /> class.
         /// </summary>
@@ -115,6 +99,22 @@ namespace ImageSharp.Drawing.Processors
             {
                 this.region = paths[0].Bounds;
             }
+        }
+
+        private static IPath[] Convert(IShape shape)
+        {
+            return shape.ToArray();
+        }
+
+        private static IPath[] Convert(IShape[] shape)
+        {
+            List<IPath> paths = new List<Paths.IPath>();
+            foreach (var s in shape)
+            {
+                paths.AddRange(s);
+            }
+
+            return paths.ToArray();
         }
 
         /// <inheritdoc/>

@@ -53,7 +53,6 @@ namespace ImageSharp.Drawing.Shapes
             this.Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ComplexPolygon" /> class.
         /// </summary>

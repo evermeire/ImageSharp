@@ -21,7 +21,7 @@ namespace ImageSharp.Drawing
     /// </summary>
     public sealed class Font
     {
-        private readonly Typeface typeface;
+        private readonly InnerFont innerFont;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
@@ -29,7 +29,7 @@ namespace ImageSharp.Drawing
         /// <param name="fontStream">The font stream.</param>
         public Font(Stream fontStream)
         {
-            this.typeface = OpenTypeReader.Read(fontStream);
+            this.innerFont = new InnerFont(fontStream);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace ImageSharp.Drawing
         public Font(Font prototype)
         {
             // clone out the setting in here
-            this.typeface = prototype.typeface;
+            this.innerFont = prototype.innerFont;
             this.Size = prototype.Size;
             this.EnableKerning = prototype.EnableKerning;
         }
@@ -50,7 +50,7 @@ namespace ImageSharp.Drawing
         /// <value>
         /// The font family.
         /// </value>
-        public string FontFamily => this.typeface.Name;
+        public string FontFamily => this.innerFont.FontFamily;
 
         /// <summary>
         /// Gets the font veriant.
@@ -58,7 +58,7 @@ namespace ImageSharp.Drawing
         /// <value>
         /// The font veriant.
         /// </value>
-        public string FontVeriant => this.typeface.FontSubFamily;
+        public string FontVeriant => this.innerFont.FontVeriant;
 
         /// <summary>
         /// Gets or sets the size. This defaults to 10.
@@ -101,100 +101,19 @@ namespace ImageSharp.Drawing
         /// </returns>
         public SizeF Measure(string text)
         {
-            var shapes = this.GenerateContours(text);
-            RectangleF fillBounds;
-            if (shapes.Length == 1)
-            {
-                fillBounds = shapes[0].Bounds;
-            }
-            else
-            {
-                var polysmaxX = shapes.Max(x => x.Bounds.Right);
-                var polysminX = shapes.Min(x => x.Bounds.Left);
-                var polysmaxY = shapes.Max(x => x.Bounds.Bottom);
-                var polysminY = shapes.Min(x => x.Bounds.Top);
-
-                fillBounds = new RectangleF(polysminX, polysminY, polysmaxX - polysminX, polysmaxY - polysminY);
-            }
-
-            return fillBounds.Size;
+            return this.innerFont.Measure(text, this);
         }
 
         /// <summary>
         /// Generates the contours.
         /// </summary>
-        /// <param name="str">The string.</param>
+        /// <param name="text">The text.</param>
         /// <returns>
         /// Returns a collection of shapes making up each glyph and the realtive posion to the origin 0,0.
         /// </returns>
-        public IShape[] GenerateContours(string str)
+        public IShape[] GenerateContours(string text)
         {
-            Vector2 origin = Vector2.Zero;
-
-            // TODO add support for clipping (complex polygons should help here)
-            // TODO add support for wrapping (line heights)
-            var glyphs = new List<GlyphPolygon>();
-
-            var glyphPathBuilder = new GlyphPathBuilderPolygons(this.typeface);
-
-            float scale = this.typeface.CalculateScale(this.Size);
-
-            bool enable_kerning = this.EnableKerning;
-            ushort prevIdx = 0;
-            var j = str.Length;
-            float computedLineHeight = this.LineHeight * this.Size;
-            bool startOfLine = true;
-
-            var spaceIndex = (ushort)this.typeface.LookupIndex(' ');
-            var spaceWidth = this.typeface.GetAdvanceWidthFromGlyphIndex(spaceIndex) * scale;
-
-            for (int i = 0; i < j; ++i)
-            {
-                char c = str[i];
-                bool doKerning = enable_kerning && !startOfLine;
-                startOfLine = false;
-
-                switch (c)
-                {
-                    case '\n':
-                        origin.Y += computedLineHeight;
-                        origin.X = 0;
-                        startOfLine = true;
-                        break;
-                    case '\r':
-                        // ignore '\r's
-                        break;
-                    case ' ':
-                        origin.X += spaceWidth;
-                        prevIdx = spaceIndex;
-                        break;
-                    case '\t':
-                        origin.X += spaceWidth * this.TabWidth;
-                        prevIdx = spaceIndex;
-                        break;
-                    default:
-                        var glyIndex = (ushort)this.typeface.LookupIndex(c);
-                        var glyph = glyphPathBuilder.BuildGlyph(glyIndex, this.Size, scale, origin);
-                        if (glyph != null)
-                        {
-                            glyphs.Add(glyph);
-                        }
-
-                        // this advWidth in font design unit
-                        float advWidth = this.typeface.GetAdvanceWidthFromGlyphIndex(glyIndex) * scale;
-                        if (doKerning)
-                        {
-                            // check kerning
-                            advWidth += this.typeface.GetKernDistance(prevIdx, glyIndex) * scale;
-                        }
-
-                        origin.X += advWidth;
-                        prevIdx = glyIndex;
-                        break;
-                }
-            }
-
-            return glyphs.ToArray();
+            return this.innerFont.GenerateContours(text, this);
         }
     }
 }

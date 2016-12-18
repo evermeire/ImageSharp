@@ -53,6 +53,7 @@ namespace ImageSharp.Drawing.Paths
         /// The calculated.
         /// </summary>
         private bool calculated = false;
+        private readonly Vector2 offset;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalPath"/> class.
@@ -80,7 +81,20 @@ namespace ImageSharp.Drawing.Paths
         /// <param name="points">The points.</param>
         /// <param name="isClosedPath">if set to <c>true</c> [is closed path].</param>
         internal InternalPath(Vector2[] points, bool isClosedPath)
+            : this(points, isClosedPath, Vector2.Zero)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InternalPath" /> class.
+        /// </summary>
+        /// <param name="points">The points.</param>
+        /// <param name="isClosedPath">if set to <c>true</c> [is closed path].</param>
+        /// <param name="scale">The scale.</param>
+        /// <param name="offset">The offset.</param>
+        internal InternalPath(Vector2[] points, bool isClosedPath, Vector2 offset)
+        {
+            this.offset = offset;
             this.points = points;
             this.closedPath = isClosedPath;
 
@@ -89,8 +103,20 @@ namespace ImageSharp.Drawing.Paths
             float minY = this.points.Min(x => x.Y);
             float maxY = this.points.Max(x => x.Y);
 
-            this.Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
+            this.Bounds = new RectangleF(minX+ offset.X, minY + offset.Y, maxX - minX, maxY - minY);
             this.totalDistance = new Lazy<float>(this.CalculateLength);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InternalPath" /> class.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="isClosedPath">if set to <c>true</c> [is closed path].</param>
+        /// <param name="scale">The scale.</param>
+        /// <param name="offset">The offset.</param>
+        internal InternalPath(InternalPath path, bool isClosedPath,  Vector2 offset)
+            : this(path.points,  isClosedPath, offset)
+        {
         }
 
         /// <summary>
@@ -127,6 +153,8 @@ namespace ImageSharp.Drawing.Paths
         /// <returns>Returns the distance from the path</returns>
         public PointInfo DistanceFromPath(Vector2 point)
         {
+            var initalPoint = point;
+            point = point - offset;
             this.CalculateConstants();
 
             PointInfoInternal internalInfo = default(PointInfoInternal);
@@ -158,8 +186,8 @@ namespace ImageSharp.Drawing.Paths
             {
                 DistanceAlongPath = this.distance[closestPoint] + Vector2.Distance(this.points[closestPoint], point),
                 DistanceFromPath = (float)Math.Sqrt(internalInfo.DistanceSquared),
-                SearchPoint = point,
-                ClosestPointOnPath = internalInfo.PointOnLine
+                SearchPoint = initalPoint,
+                ClosestPointOnPath = internalInfo.PointOnLine + offset
             };
         }
 
@@ -176,10 +204,14 @@ namespace ImageSharp.Drawing.Paths
                 return false;
             }
 
+            // The bounding box is already offset so check against origional point
             if (!this.Bounds.Contains(point.X, point.Y))
             {
                 return false;
             }
+
+            // Ofset the checked point into the smae range as the points
+            point = point - offset;
 
             this.CalculateConstants();
 
@@ -202,6 +234,18 @@ namespace ImageSharp.Drawing.Paths
 
             return oddNodes;
         }
+
+        //private static Vector2[] Translate(Vector2[] vectors, float scale, Vector2 offset)
+        //{
+        //    // must not change origional as it might be sourced from a cache and might need to be translated again.
+        //    var len = vectors.Length;
+        //    var translatedPoints = new Vector2[len];
+        //    for (var i = 0; i < len; i++)
+        //    {
+        //        translatedPoints[i] = (vectors[i] * scale) + offset;
+        //    }
+        //    return translatedPoints;
+        //}
 
         /// <summary>
         /// Simplifies the collection of segments.
