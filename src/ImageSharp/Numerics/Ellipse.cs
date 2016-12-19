@@ -22,7 +22,8 @@ namespace ImageSharp
         /// <summary>
         /// The center point.
         /// </summary>
-        private Point center;
+        private Vector2 center;
+        private Vector2 radius;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Ellipse"/> struct.
@@ -30,22 +31,31 @@ namespace ImageSharp
         /// <param name="center">The center point.</param>
         /// <param name="radiusX">The x-radius.</param>
         /// <param name="radiusY">The y-radius.</param>
-        public Ellipse(Point center, float radiusX, float radiusY)
+        public Ellipse(Vector2 center, float radiusX, float radiusY)
         {
             this.center = center;
-            this.RadiusX = radiusX;
-            this.RadiusY = radiusY;
+            radius = new Vector2(radiusX, radiusY);
         }
 
         /// <summary>
         /// Gets the x-radius of this <see cref="Ellipse"/>.
         /// </summary>
-        public float RadiusX { get; }
+        public float RadiusX => radius.X;
 
         /// <summary>
         /// Gets the y-radius of this <see cref="Ellipse"/>.
         /// </summary>
-        public float RadiusY { get; }
+        public float RadiusY => radius.Y;
+
+        /// <summary>
+        /// Gets the x of center of this <see cref="Ellipse"/>.
+        /// </summary>
+        public float X => center.X;
+
+        /// <summary>
+        /// Gets the y of center of this <see cref="Ellipse"/>.
+        /// </summary>
+        public float Y => center.Y;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Ellipse"/> is empty.
@@ -94,7 +104,7 @@ namespace ImageSharp
         /// <returns><see cref="Vector2"/></returns>
         public static Vector2 Center(Ellipse ellipse)
         {
-            return new Vector2(ellipse.center.X, ellipse.center.Y);
+            return ellipse.center;
         }
 
         /// <summary>
@@ -111,16 +121,16 @@ namespace ImageSharp
                 return false;
             }
 
-            // TODO: SIMD?
-            // This is a more general form of the circle equation
-            // X^2/a^2 + Y^2/b^2 <= 1
-            Point normalized = new Point(x - this.center.X, y - this.center.Y);
-            int nX = normalized.X;
-            int nY = normalized.Y;
+            Vector2 point = new Vector2(x, y);
+            Vector2 normalized = point - this.center;
+            var normalizedSqr = normalized * normalized;
+            var radiusSqr = radius * radius;
+            float nX = normalized.X;
+            float nY = normalized.Y;
 
-            return ((double)(nX * nX) / (this.RadiusX * this.RadiusX))
-                 + ((double)(nY * nY) / (this.RadiusY * this.RadiusY))
-                 <= 1.0;
+            var ratio = normalizedSqr / radiusSqr;
+
+            return (ratio.X + ratio.Y) <= 1.0;
         }
 
         /// <inheritdoc/>
