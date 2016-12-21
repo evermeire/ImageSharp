@@ -28,12 +28,9 @@ namespace ImageSharp.Drawing
         /// <param name="character">The character.</param>
         /// <param name="index">The index.</param>
         /// <param name="polygons">The polygons.</param>
-        public GlyphPolygon(char character, ushort index, Polygon[] polygons)
+        public GlyphPolygon(Polygon[] polygons)
         {
-            this.GlyphIndex = index;
-            this.Character = character;
             this.polygons = polygons;
-            this.IsEmpty = false;
 
             var minX = this.polygons.Min(x => x.Bounds.Left);
             var maxX = this.polygons.Max(x => x.Bounds.Right);
@@ -41,29 +38,6 @@ namespace ImageSharp.Drawing
             var maxY = this.polygons.Max(x => x.Bounds.Bottom);
 
             this.Bounds = new RectangleF(minX, minY, maxX - minX, maxY - minY);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GlyphPolygon" /> class.
-        /// </summary>
-        /// <param name="character">The character.</param>
-        /// <param name="index">The index.</param>
-        public GlyphPolygon(char character, ushort index)
-        {
-            this.GlyphIndex = index;
-            this.Character = character;
-            this.IsEmpty = true;
-            this.Bounds = RectangleF.Empty;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GlyphPolygon" /> class.
-        /// </summary>
-        /// <param name="srcGlyph">The source glyph.</param>
-        /// <param name="offset">The offset.</param>
-        public GlyphPolygon(GlyphPolygon srcGlyph, Vector2 offset)
-            : this(srcGlyph.Character, srcGlyph.GlyphIndex, Translate(srcGlyph.polygons, offset))
-        {
         }
 
         /// <summary>

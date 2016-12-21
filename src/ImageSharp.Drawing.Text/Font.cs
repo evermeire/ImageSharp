@@ -14,14 +14,15 @@ namespace ImageSharp.Drawing
     using System.Threading.Tasks;
     using ImageSharp.Drawing.Paths;
     using ImageSharp.Drawing.Shapes;
-    using NOpenType;
+    using NRasterizer;
 
     /// <summary>
     /// Provides access to a loaded font and provides configuration options for how it should be rendered.
     /// </summary>
     public sealed class Font
     {
-        private readonly InnerFont innerFont;
+        private readonly Typeface typeface;
+        private static OpenTypeReader fontReader = new OpenTypeReader();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
@@ -29,7 +30,7 @@ namespace ImageSharp.Drawing
         /// <param name="fontStream">The font stream.</param>
         public Font(Stream fontStream)
         {
-            this.innerFont = new InnerFont(fontStream);
+            this.typeface = fontReader.Read(fontStream);
         }
 
         /// <summary>
@@ -39,10 +40,17 @@ namespace ImageSharp.Drawing
         public Font(Font prototype)
         {
             // clone out the setting in here
-            this.innerFont = prototype.innerFont;
+            this.typeface = prototype.typeface;
             this.Size = prototype.Size;
-            this.EnableKerning = prototype.EnableKerning;
         }
+
+        /// <summary>
+        /// Gets the typeface.
+        /// </summary>
+        /// <value>
+        /// The typeface.
+        /// </value>
+        internal Typeface Typeface => typeface;
 
         /// <summary>
         /// Gets the font family.
@@ -50,7 +58,7 @@ namespace ImageSharp.Drawing
         /// <value>
         /// The font family.
         /// </value>
-        public string FontFamily => this.innerFont.FontFamily;
+        public string FontFamily => "to be fixed";// this.typeface.FontFamily;
 
         /// <summary>
         /// Gets the font veriant.
@@ -58,7 +66,7 @@ namespace ImageSharp.Drawing
         /// <value>
         /// The font veriant.
         /// </value>
-        public string FontVeriant => this.innerFont.FontVeriant;
+        public string FontVeriant => "to be fixed";//this.innerFont.FontVeriant;
 
         /// <summary>
         /// Gets or sets the size. This defaults to 10.
@@ -66,54 +74,25 @@ namespace ImageSharp.Drawing
         /// <value>
         /// The size.
         /// </value>
-        public float Size { get; set; } = 10; // as good a size any for a defaut size.
+        public int Size { get; set; } = 10; // as good a size any for a defaut size.
+
+        ///// <summary>
+        ///// Gets or sets the height of the line in relation to the <see cref="Size"/>.
+        ///// </summary>
+        ///// <value>
+        ///// The height of the line.
+        ///// </value>
+        //public float LineHeight { get; set; } = 1.5f; // as good a size any for a defaut size.
+
 
         /// <summary>
-        /// Gets or sets the height of the line in relation to the <see cref="Size"/>.
+        /// Creates the renderer.
         /// </summary>
-        /// <value>
-        /// The height of the line.
-        /// </value>
-        public float LineHeight { get; set; } = 1.5f; // as good a size any for a defaut size.
-
-        /// <summary>
-        /// Gets or sets the width of the tab in number of spaces.
-        /// </summary>
-        /// <value>
-        /// The width of the tab.
-        /// </value>
-        public float TabWidth { get; set; } = 4; // as good a size any for a defaut size.
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to enable kerning. This defaults to true.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if kerning is enabled otherwise <c>false</c>.
-        /// </value>
-        public bool EnableKerning { get; set; } = true;
-
-        /// <summary>
-        /// Measures the text with settings from the font.
-        /// </summary>
-        /// <param name="text">The text to mesure.</param>
-        /// <returns>
-        /// a <see cref="SizeF" /> of the mesured height and with of the text
-        /// </returns>
-        public SizeF Measure(string text)
+        /// <param name="rasterizer">The rasterizer.</param>
+        /// <returns>A renderer that can draw on a <see cref="IGlyphRasterizer"/>.</returns>
+        internal NRasterizer.Renderer CreateRenderer(IGlyphRasterizer rasterizer)
         {
-            return this.innerFont.Measure(text, this);
-        }
-
-        /// <summary>
-        /// Generates the contours.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <returns>
-        /// Returns a collection of shapes making up each glyph and the realtive posion to the origin 0,0.
-        /// </returns>
-        public IShape[] GenerateContours(string text)
-        {
-            return this.innerFont.GenerateContours(text, this);
+            return new NRasterizer.Renderer(typeface, rasterizer);
         }
     }
 }

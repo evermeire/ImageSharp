@@ -36,7 +36,7 @@ namespace ImageSharp
            where TColor : struct, IPackedPixel<TPacked>
            where TPacked : struct, IEquatable<TPacked>
         {
-            return source.Process(new DrawPathProcessor<TColor, TPacked>(pen, (IPath)new RectangularPolygon(shape), options));
+            return source.Process(new DrawPathProcessor<TColor, TPacked>(pen, new[] { (IPath)new RectangularPolygon(shape) }, options));
         }
 
         /// <summary>

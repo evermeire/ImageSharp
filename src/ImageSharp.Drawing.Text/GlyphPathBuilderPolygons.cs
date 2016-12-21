@@ -13,22 +13,29 @@ namespace ImageSharp.Drawing
     using System.Threading.Tasks;
     using ImageSharp.Drawing.Paths;
     using ImageSharp.Drawing.Shapes;
-    using NOpenType;
+    using NRasterizer;
 
     /// <summary>
     /// Used to convert the fint glyphs into GlyphPolygons for rendering.
     /// </summary>
     /// <seealso cref="NOpenType.GlyphPathBuilderBase" />
-    internal class GlyphPathBuilderPolygons : NOpenType.GlyphPathBuilderBase
+    internal class GlyphPathBuilderPolygons
     {
-        private static readonly Vector2 TwoThirds = new Vector2(2f / 3f);
         private object locker = new object();
         private Dictionary<char, GlyphPolygon> glyphCache = new Dictionary<char, GlyphPolygon>();
-        private List<Polygon> polygons = new List<Polygon>();
-        private List<ILineSegment> segments = new List<ILineSegment>();
-        private Vector2 lastPoint;
-        private Vector2 offset;
-        private Vector2 scale;
+
+        const int pointsPerInch = 72;
+        const int resolution = 96;
+        private readonly Typeface typeface;
+        private Renderer renderer;
+        private GlyphRasterizer raterizer;
+        private readonly int scaleDown;
+        private readonly int scaleUp;
+
+        public float CalculateScale(float sizeInPointUnit, int resolution = 96)
+        {
+            return ((sizeInPointUnit * resolution) / (pointsPerInch * typeface.UnitsPerEm));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GlyphPathBuilderPolygons" /> class.
@@ -36,11 +43,16 @@ namespace ImageSharp.Drawing
         /// <param name="typeface">The typeface.</param>
         /// <param name="fontSize">Size of the font.</param>
         public GlyphPathBuilderPolygons(Typeface typeface, float fontSize)
-            : base(typeface)
         {
-            this.offset = new Vector2(0, fontSize);
-            var scaleFactor = typeface.CalculateScale(fontSize);
-            this.scale = new Vector2(scaleFactor, -scaleFactor);
+            this.typeface = typeface;
+            //this.offset = new Vector2(0, fontSize);
+            //var scaleFactor = CalculateScale(fontSize);
+            //this.scale = new Vector2(scaleFactor, -scaleFactor);
+
+            this.scaleUp = (int)Math.Round(fontSize * resolution);
+            this.scaleDown = EmSquare.Size * resolution;
+            this.raterizer = new GlyphRasterizer();
+            this.renderer = new NRasterizer.Renderer(typeface, raterizer);
         }
 
         /// <summary>
@@ -50,7 +62,7 @@ namespace ImageSharp.Drawing
         /// <returns>
         /// Returns the polygon for the requested glyph
         /// </returns>
-        public GlyphPolygon BuildGlyph(char character)
+        public GlyphPolygon BuildGlyphs(char character)
         {
             if (this.glyphCache.ContainsKey(character))
             {
@@ -65,19 +77,18 @@ namespace ImageSharp.Drawing
                     return this.glyphCache[character];
                 }
 
-                var glyIndex = (ushort)this.TypeFace.LookupIndex(character);
+                var glyIndex = (ushort)this.typeface.LookupIndex(character);
 
-                this.BuildFromGlyphIndex(glyIndex, 1);
+                var glyph = typeface.Lookup(character);
+                //render each glyph at 0,0 we will offset when rendering
 
-                GlyphPolygon result;
-                if (this.polygons.Any())
+                this.raterizer.CurrentCharacter = character;
+                this.raterizer.CurrentIndex = glyIndex;
+                renderer.RenderGlyph(0, 0, scaleUp, scaleDown, glyph);
+                var result = this.raterizer.Glyph;
+                    
+                if (result == null)
                 {
-                    result = new GlyphPolygon(character, glyIndex, this.polygons.ToArray());
-                    this.polygons.Clear();
-                }
-                else
-                {
-                    result = new GlyphPolygon(character, glyIndex);
                     return null;
                 }
 
@@ -86,34 +97,25 @@ namespace ImageSharp.Drawing
             }
         }
 
-        /// <summary>
-        /// Called when [begin read].
-        /// </summary>
-        /// <param name="countourCount">The countour count.</param>
-        protected override void OnBeginRead(int countourCount)
-        {
-            this.segments.Clear();
-            this.polygons.Clear();
-        }
+    }
 
-        /// <summary>
-        /// Called when [end read].
-        /// </summary>
-        protected override void OnEndRead()
-        {
-        }
 
-        /// <summary>
-        /// Called when [close figure].
-        /// </summary>
-        protected override void OnCloseFigure()
-        {
-            if (this.segments.Any())
-            {
-                this.polygons.Add(new Polygon(this.segments.ToArray()));
-                this.segments.Clear();
-            }
-        }
+    internal class GlyphRasterizer : NRasterizer.IGlyphRasterizer
+    {
+        private GlyphPolygon _glyph;
+        public GlyphPolygon Glyph => _glyph;
+
+        public char CurrentCharacter { get; internal set; }
+        public ushort CurrentIndex { get; internal set; }
+
+        private static readonly Vector2 TwoThirds = new Vector2(2f / 3f);
+
+        private List<Polygon> polygons = new List<Polygon>();
+        private List<ILineSegment> segments = new List<ILineSegment>();
+        private Vector2 lastPoint;
+        private Vector2 offset;
+        private Vector2 scale;
+        
 
         /// <summary>
         /// Called when [curve3].
@@ -122,17 +124,8 @@ namespace ImageSharp.Drawing
         /// <param name="p2y">The p2y.</param>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        protected override void OnCurve3(short p2x, short p2y, short x, short y)
+        public void OnCurve3(short p2x, short p2y, short x, short y)
         {
-            var controlPoint = this.offset + (new Vector2(p2x, p2y) * this.scale);
-            var endPoint = this.offset + (new Vector2(x, y) * this.scale);
-
-            var c1 = ((controlPoint - this.lastPoint) * TwoThirds) + this.lastPoint;
-            var c2 = ((controlPoint - endPoint) * TwoThirds) + endPoint;
-
-            this.segments.Add(new BezierLineSegment(this.lastPoint, c1, c2, endPoint));
-
-            this.lastPoint = endPoint;
         }
 
         /// <summary>
@@ -144,14 +137,8 @@ namespace ImageSharp.Drawing
         /// <param name="p3y">The p3y.</param>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        protected override void OnCurve4(short p2x, short p2y, short p3x, short p3y, short x, short y)
+        public void OnCurve4(short p2x, short p2y, short p3x, short p3y, short x, short y)
         {
-            var endPoint = this.offset + (new Vector2(x, y) * this.scale);
-            var c1 = this.offset + (new Vector2(p2x, p2y) * this.scale);
-            var c2 = this.offset + (new Vector2(p3x, p3y) * this.scale);
-
-            this.segments.Add(new BezierLineSegment(this.lastPoint, c1, c2, endPoint));
-            this.lastPoint = endPoint;
         }
 
         /// <summary>
@@ -159,7 +146,7 @@ namespace ImageSharp.Drawing
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        protected override void OnLineTo(short x, short y)
+        public void LineTo(short x, short y)
         {
             var endPoint = this.offset + (new Vector2(x, y) * this.scale);
             this.segments.Add(new LinearLineSegment(this.lastPoint, endPoint));
@@ -171,16 +158,51 @@ namespace ImageSharp.Drawing
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        protected override void OnMoveTo(short x, short y)
+        public void MoveTo(short x, short y)
         {
-            // we close of the current segemnts in here
+        }
+
+        public void BeginRead(int countourCount)
+        {
+        }
+
+        public void EndRead()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LineTo(double x, double y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Curve3(double p2x, double p2y, double x, double y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Curve4(double p2x, double p2y, double p3x, double p3y, double x, double y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveTo(double x, double y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseFigure()
+        {
             if (this.segments.Any())
             {
                 this.polygons.Add(new Polygon(this.segments.ToArray()));
                 this.segments.Clear();
             }
+        }
 
-            this.lastPoint = this.offset + (new Vector2(x, y) * this.scale);
+        public void Flush()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -35,6 +35,27 @@ namespace ImageSharp.Tests.Drawing
                     .Save(output);
             }
         }
+
+
+        [Fact]
+        public void ImageShouldBeOverlayedByTextDouble()
+        {
+            string path = CreateOutputDirectory("Drawing", "String");
+            var image = new Image(400, 80);
+
+            var fontFile = new TestFont(TestFonts.Ttf.OpenSans_Regular);
+            var font = fontFile.CreateFont();
+            font.Size = 50;
+            using (FileStream output = File.OpenWrite($"{path}/Double.png"))
+            {
+                image
+                    .BackgroundColor(Color.Blue)
+                    .DrawString("Hello", font, Color.HotPink, new Vector2(10, 10))
+                    .DrawString("World", font, Color.HotPink, new Vector2(200, 30))
+                    .Save(output);
+            }
+        }
+
         [Fact]
         public void ImageShouldBeOverlayedByTextNoAntialiasing()
         {
@@ -71,7 +92,7 @@ namespace ImageSharp.Tests.Drawing
             }
         }
 
-        [Fact]
+        [Fact(Skip = "NOpenType doesn't support an api that will let us cleanly do this yet")]
         public void ImageShouldBeOverlayedByTextNewLine()
         {
             string path = CreateOutputDirectory("Drawing", "String");
@@ -89,7 +110,7 @@ namespace ImageSharp.Tests.Drawing
             }
         }
 
-        [Fact]
+        [Fact(Skip = "NOpenType doesn't support an api that will let us cleanly do this yet")]
         public void ImageShouldBeOverlayedByTextNewLineAndWithTab()
         {
             string path = CreateOutputDirectory("Drawing", "String");

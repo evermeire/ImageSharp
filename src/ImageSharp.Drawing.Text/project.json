@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "ImageSharp": "1.0.0-*",
-    "NOpenType": "0.1.3",
+    "NOpenType": "0.1.4-netstandard0001",
     "StyleCop.Analyzers": {
       "version": "1.0.0",
       "type": "build"
