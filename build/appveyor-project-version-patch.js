@@ -1,13 +1,15 @@
 ﻿var jsonfile = require("jsonfile");
 var semver = require("semver");
 
-var file = "../src/imagesharp/project.json";
+var files = ["../src/imagesharp/project.json", "../src/ImageSharp.Drawing.Text/project.json"];
 
 var semversion = semver.valid(process.env.mssemver);
-
-jsonfile.readFile(file, function (err, project) {
-	project.version = semversion;
-	jsonfile.writeFile(file, project, {spaces: 2}, function(err) {
-		console.error(err);
-	});
+files.forEach(function (f) {
+    //update all the files in turn
+    jsonfile.readFile(f, function (err, project) {
+        project.version = semversion;
+        jsonfile.writeFile(f, project, { spaces: 2 }, function (err) {
+            console.error(err);
+        });
+    })
 })

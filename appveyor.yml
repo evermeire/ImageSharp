@@ -31,6 +31,8 @@ before_build:
 - cmd: >-
     dotnet restore src\ImageSharp
 
+    dotnet restore src\ImageSharp.Drawing.Text
+
     cd build
 
     npm install
@@ -42,6 +44,8 @@ before_build:
 build_script:
 - cmd: >-
     dotnet pack src\ImageSharp --configuration Release --output "artifacts\bin\ImageSharp"
+
+    dotnet pack src\ImageSharp.Drawing.Text --configuration Release --output "artifacts\bin\ImageSharp"
 
 test_script:
 - tests\CodeCoverage\CodeCoverage.cmd
